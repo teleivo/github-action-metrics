@@ -1,7 +1,9 @@
 import { Octokit } from "octokit";
 import { openSync, closeSync, existsSync, writeFileSync} from "fs";
 
-const octokit = new Octokit();
+const octokit = new Octokit({
+  auth: process.env.GITHUB_TOKEN,
+});
 
 async function fetchWorkflows() {
     const file = "data/workflows.json"
