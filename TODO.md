@@ -8,7 +8,8 @@ https://docs.github.com/en/rest/reference/actions#list-workflow-runs-for-a-repos
 
 then for each run the jobs I am interested in
 
-https://docs.github.com/en/rest/reference/actions#get-a-job-for-a-workflow-run
+fetch the "jobs_url" inside the run
+(https://docs.github.com/en/rest/reference/actions#get-a-job-for-a-workflow-run)
 
 * get all runs. how to get them in a paced way. lets say via a GitHub action
   cron that runs twice a day and commits to this repo. Are there query params
