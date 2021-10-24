@@ -9,6 +9,11 @@ via
 
 https://docs.github.com/en/rest/reference/actions#list-workflow-runs-for-a-repository
 
+limit myself to a few workflow_id's 
+
+10954 - run-tests.yml
+5591308 - run-api-tests.yml
+
 then for each run fetch the "jobs_url" inside the run
 (https://docs.github.com/en/rest/reference/actions#get-a-job-for-a-workflow-run)
 
