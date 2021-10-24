@@ -29,7 +29,7 @@ async function fetchAllRuns(workflow_id : number) {
                 console.log("Run #%d", run.id);
                 const file = `data/workflows/${workflow_id}/runs/${run.id}.json`
                 if (existsSync(file)) {
-                    console.log("run #%d exist already in %s", run.id, file)
+                    console.log("run #%d already exists in %s", run.id, file)
                     continue
                 }
                 const fd = openSync(file, "w")

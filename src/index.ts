@@ -8,7 +8,7 @@ const octokit = new Octokit({
 async function fetchWorkflows() {
     const file = "data/workflows.json"
     if (existsSync(file)) {
-        console.log(`workflows exist already in ${file}`)
+        console.log(`workflows already exists in ${file}`)
         return
     }
 
