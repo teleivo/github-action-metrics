@@ -1,5 +1,6 @@
-import { Octokit } from "octokit";
-import { openSync, closeSync, existsSync, writeFileSync} from "fs";
+import { Octokit } from "octokit"
+import { openSync, opendirSync, closeSync, existsSync, writeFileSync} from "fs"
+import * as path from "path"
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
@@ -27,7 +28,7 @@ async function fetchJobs(workflowId : number, runId : number) {
         return 
     }
     if (response.status != 200){
-        console.log(`failed to fetch workflows API responded with status ${response.status}`)
+        console.log(`failed to fetch jobs API responded with status ${response.status}`)
         return
     }
 
@@ -36,9 +37,24 @@ async function fetchJobs(workflowId : number, runId : number) {
     closeSync(fd)
 }
 
-const workflowId = 10954
 // TODO call fetchJobs for every ${runId}.json file in
 // data/workflows/${workflowId}/...json
 // this is just a sample
-const runId = 1233841997
-fetchJobs(workflowId, runId)
+async function fetchAllJobs(workflowId : number) {
+    const file = `data/workflows/${workflowId}/runs/`
+    const dir = opendirSync(file)
+    for await (const dirent of dir) {
+        if (!dirent.isFile()) {
+            continue
+        }
+        const runId = Number(path.parse(dirent.name).name)
+        if (Number.isNaN(runId)) {
+            console.log(`failed to parse runId from file ${dirent.name}`)
+            continue
+        }
+        fetchJobs(workflowId, runId)
+    }
+}
+
+const workflowId = 10954
+fetchAllJobs(workflowId)

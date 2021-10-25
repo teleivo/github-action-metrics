@@ -24,3 +24,4 @@ I can resume using the lastPage just in case the lastPage was not full
 * setup ELK stack
 * ingest data
 * create first visualization for for example how did the "Run integration tests" step evolve over time?
+* extract DHIS2 related code/data and make repo generic
