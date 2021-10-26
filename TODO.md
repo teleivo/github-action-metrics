@@ -1,5 +1,8 @@
 # TODO
 
+- WAIT for bug report. I can resume using the octokit.paginate method but the
+  API does not respect its own pagination information. After page 10 I do not
+  get any results back, so octokit stops fetching ;)
 - what if the total number changes? how to first get the total number, check
   how many I have already stored and only fetch whats left?
 - get job for each run
