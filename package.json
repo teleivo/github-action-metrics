@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
   },
   "repository": {
     "type": "git",
@@ -20,6 +24,8 @@
     "octokit": "^1.7.0"
   },
   "devDependencies": {
-    "@tsconfig/node12": "^1.0.9"
+    "@tsconfig/node12": "^1.0.9",
+    "husky": "^7.0.4",
+    "lint-staged": "^11.2.4"
   }
 }
