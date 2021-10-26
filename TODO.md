@@ -15,7 +15,6 @@ then for each run fetch the "jobs_url" inside the run
 - if I start with fetchAllRuns() and store the last page in data/workflow/10954/runs/lastPage
   I can resume using the lastPage just in case the lastPage was not full
 
-- autoformat code
 - write code to get the remaining runs and jobs. for remaining runs will need to
   keep track of the last page in fetchAllRuns & fetchRemainingRuns
 - create a small CLI out of it so I can easily get all runs for other workflows
