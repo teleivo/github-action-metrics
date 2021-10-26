@@ -117,7 +117,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# ignore compiler output
-*.js
-
 .husky
+# ignore compiler output
+dist
