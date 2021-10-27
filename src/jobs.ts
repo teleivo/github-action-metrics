@@ -29,6 +29,7 @@ async function fetchJobs(
     // currently I just take the 'latest' but there could be multiple
     // attemps see filter
     response = await octokit.rest.actions.listJobsForWorkflowRun(params);
+    console.log("Fetched jobs for run #%d", params.run_id);
   } catch (error) {
     console.error(error);
     return;
