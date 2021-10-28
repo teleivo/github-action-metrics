@@ -1,0 +1,35 @@
+{
+  "name": "github-action-metrics",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "gham": "bin/gham"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teleivo/dhis2-github-action-metrics.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/teleivo/dhis2-github-action-metrics/issues"
+  },
+  "homepage": "https://github.com/teleivo/dhis2-github-action-metrics#readme",
+  "dependencies": {
+    "commander": "^8.3.0",
+    "octokit": "^1.7.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node12": "^1.0.9",
+    "husky": "^7.0.4",
+    "lint-staged": "^11.2.4"
+  }
+}
