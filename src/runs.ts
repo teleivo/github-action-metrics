@@ -1,10 +1,8 @@
-import { Octokit } from "octokit";
-import { openSync, closeSync, existsSync, writeFileSync } from "fs";
-import { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods";
+import * as fs from "fs";
+import * as path from "path";
 
-const octokit = new Octokit({
-  auth: process.env.GITHUB_TOKEN,
-});
+import { Octokit } from "octokit";
+import { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods";
 
 // Although not specified in the docs https://docs.github.com/en/rest/reference/actions#list-workflow-runs
 // the API only returns the 10 last pages. So we can get the last ~1000 runs
@@ -12,9 +10,15 @@ const octokit = new Octokit({
 // created https://github.blog/changelog/2021-09-02-github-actions-filter-workflow-runs-by-created-date/
 // You can thus run this every day and it will store the latest runs you have
 // not yet stored locally.
-async function fetchLatestRuns(
-  params: RestEndpointMethodTypes["actions"]["listWorkflowRuns"]["parameters"]
+async function fetch(
+  params: RestEndpointMethodTypes["actions"]["listWorkflowRuns"]["parameters"],
+  directory: string,
+  token: string
 ) {
+  const octokit = new Octokit({
+    auth: token,
+  });
+
   octokit.hook.after("request", async (response, options) => {
     const ratelimit = `${response.headers["x-ratelimit-used"]}/${response.headers["x-ratelimit-limit"]}`;
     console.log(
@@ -39,14 +43,18 @@ async function fetchLatestRuns(
     for await (const { data: runs } of iterator) {
       for (const run of runs) {
         console.log("Run #%d", run.id);
-        const file = `data/workflows/${params.workflow_id}/runs/${run.id}.json`;
-        if (existsSync(file)) {
+        const file = path.join(
+          directory,
+          `/workflows/${params.workflow_id}/runs/${run.id}.json`
+        );
+        if (fs.existsSync(file)) {
           console.log("run #%d already exists in %s", run.id, file);
           continue;
         }
-        const fd = openSync(file, "w");
-        writeFileSync(fd, JSON.stringify(run));
-        closeSync(fd);
+        const fd = fs.openSync(file, "w");
+        fs.writeFileSync(fd, JSON.stringify(run));
+        // TODO ensure I always close the file
+        fs.closeSync(fd);
       }
     }
   } catch (error) {
@@ -55,9 +63,22 @@ async function fetchLatestRuns(
   }
 }
 
-const params = {
-  owner: "dhis2",
-  repo: "dhis2-core",
-  workflow_id: 10954,
-};
-fetchLatestRuns(params);
+function fetchLatestRuns(
+  repo: string,
+  owner: string,
+  workflowId: number,
+  directory: string,
+  token: string
+) {
+  fetch(
+    {
+      repo,
+      owner,
+      workflow_id: workflowId,
+    },
+    directory,
+    token
+  );
+}
+
+export default fetchLatestRuns;

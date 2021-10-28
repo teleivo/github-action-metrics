@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "bin": {
+    "gham": "bin/gham"
+  },
   "scripts": {
     "build": "tsc",
     "prepare": "husky install"
@@ -21,6 +24,7 @@
   },
   "homepage": "https://github.com/teleivo/dhis2-github-action-metrics#readme",
   "dependencies": {
+    "commander": "^8.3.0",
     "octokit": "^1.7.0"
   },
   "devDependencies": {
