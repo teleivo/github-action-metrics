@@ -6,9 +6,13 @@
 - can I chain fetching runs and jobs in the CLI? So I do not have to run them
   one by one
 - create README
+- create CI pipeline
+- publish CLI to GitHub packages
+- use CLI package in other repo in a GitHub action using cron to fetch and
+  store the action payloads
 - reuse the OctoKit instance as I assume that has some state to make sure I
   keep below the ratelimit
-- can I fetch the workflowId so it can be passed by name in the CLI?
+
 - what if token is not provided?
 
 - can I fetch multiple jobs at once? Currently every job leads to one request
@@ -40,7 +44,10 @@ retryAfter: 16
 - rethink log messages
 - add debug flag to reduce logging to a minimum
 
-- extract DHIS2 related code/data and make repo generic
 - setup ELK stack
 - ingest data
 - create first visualization for for example how did the "Run integration tests" step evolve over time?
+
+## Whishlist
+
+- can I fetch the workflowId so it can be passed by name in the CLI?
