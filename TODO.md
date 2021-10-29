@@ -9,7 +9,10 @@
 - cleanup CLI code (reuse options, extract action handlers?)
 - can I chain fetching runs and jobs in the CLI? So I do not have to run them
   one by one
-- allow fetching runs of a particular day using created param
+- allow fetching runs of a particular day using created param, but default to
+  "latest". Create a command for "runs" with subcommands latest and
+  created/date defaulting to latest. See
+https://github.com/tj/commander.js/blob/master/examples/defaultCommand.js
 - can I chain the above with jobs by passing the runIds from the fetched ones
   into this task :)
 
