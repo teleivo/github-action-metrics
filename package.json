@@ -1,8 +1,7 @@
 {
   "name": "github-action-metrics",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Fetch run & job details via the GitHub Action API",
-  "main": "index.js",
   "bin": {
     "gham": "bin/gham"
   },
@@ -15,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/teleivo/dhis2-github-action-metrics.git"
+    "url": "git+https://github.com/teleivo/github-action-metrics.git"
   },
-  "author": "",
+  "author": "teleivo",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/teleivo/dhis2-github-action-metrics/issues"
+    "url": "https://github.com/teleivo/github-action-metrics/issues"
   },
-  "homepage": "https://github.com/teleivo/dhis2-github-action-metrics#readme",
+  "homepage": "https://github.com/teleivo/github-action-metrics#readme",
   "dependencies": {
     "commander": "^8.3.0",
     "octokit": "^1.7.0"
