@@ -1,7 +1,7 @@
 {
   "name": "github-action-metrics",
   "version": "1.0.0",
-  "description": "",
+  "description": "Fetch run & job details via the GitHub Action API",
   "main": "index.js",
   "bin": {
     "gham": "bin/gham"
