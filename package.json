@@ -1,5 +1,5 @@
 {
-  "name": "github-action-metrics",
+  "name": "@teleivo/github-action-metrics",
   "version": "0.0.1",
   "description": "Fetch run & job details via the GitHub Action API",
   "bin": {
