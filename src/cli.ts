@@ -15,7 +15,7 @@ export function cli(args: string[]) {
   // did not work.
   program
     .command("runs")
-    .description("fetch latest GitHub action runs")
+    .description("fetch latest GitHub action runs for given workflow")
     .requiredOption("-r, --repo <value>", "GitHub repository")
     .requiredOption("-o, --owner <value>", "Owner of GitHub repository")
     .requiredOption(
@@ -28,7 +28,6 @@ export function cli(args: string[]) {
       "Directory where GitHub action payloads will be stored"
     )
     .option("-t, --token <value>", "GitHub access token")
-    .description("fetch latest runs of given GitHub workflow")
     .action(executeRuns);
 
   program
