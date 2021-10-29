@@ -29,26 +29,7 @@ export function cli(args: string[]) {
     )
     .option("-t, --token <value>", "GitHub access token")
     .description("fetch latest runs of given GitHub workflow")
-    .action((options) => {
-      let dir: string;
-      try {
-        dir = path.resolve(options.directory);
-        if (!fs.lstatSync(dir).isDirectory()) {
-          console.error(`${options.directory} must be a directory`);
-          process.exit(1);
-        }
-      } catch (err) {
-        console.error(err);
-        process.exit(1);
-      }
-      fetchLatestRun(
-        options.repo,
-        options.owner,
-        options.workflowId,
-        dir,
-        options.token
-      );
-    });
+    .action(executeRuns);
 
   program
     .command("jobs")
@@ -66,25 +47,48 @@ export function cli(args: string[]) {
     )
     .option("-t, --token <value>", "GitHub access token")
     .description("fetch latest runs of given GitHub workflow")
-    .action((options) => {
-      let dir: string;
-      try {
-        dir = path.resolve(options.directory);
-        if (!fs.lstatSync(dir).isDirectory()) {
-          console.error(`${options.directory} must be a directory`);
-          process.exit(1);
-        }
-      } catch (err) {
-        console.error(err);
-        process.exit(1);
-      }
-      fetchAllJobs(
-        options.repo,
-        options.owner,
-        options.workflowId,
-        dir,
-        options.token
-      );
-    });
+    .action(executeJobs);
   program.parse(args);
+}
+
+function executeRuns(options: any): void {
+  let dir: string;
+  try {
+    dir = path.resolve(options.directory);
+    if (!fs.lstatSync(dir).isDirectory()) {
+      console.error(`${options.directory} must be a directory`);
+      process.exit(1);
+    }
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
+  }
+  fetchLatestRun(
+    options.repo,
+    options.owner,
+    options.workflowId,
+    dir,
+    options.token
+  );
+}
+
+function executeJobs(options: any): void {
+  let dir: string;
+  try {
+    dir = path.resolve(options.directory);
+    if (!fs.lstatSync(dir).isDirectory()) {
+      console.error(`${options.directory} must be a directory`);
+      process.exit(1);
+    }
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
+  }
+  fetchAllJobs(
+    options.repo,
+    options.owner,
+    options.workflowId,
+    dir,
+    options.token
+  );
 }
