@@ -4,11 +4,6 @@
 
 ## CLI
 
-- update 'runs created' so it uses pagination as it can be combined. Test it
-  with for example date 2021-10-26 which had 31 runs (update per_page to see it
-  making 2 requests)
-- what if my expected substructure in the --directory is not present? I
-  currently fail. dont :)
 - cleanup CLI code (reuse options, extract action handlers?)
 - can I chain fetching runs and jobs in the CLI? So I do not have to run them
   one by one
