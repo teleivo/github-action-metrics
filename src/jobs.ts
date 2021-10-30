@@ -41,10 +41,15 @@ async function fetchJobs(
     return;
   }
 
-  const fd = fs.openSync(file, "w");
-  fs.writeFileSync(fd, JSON.stringify(response.data));
-  // TODO ensure I always close the file
-  fs.closeSync(fd);
+  let fd;
+  try {
+    fd = fs.openSync(file, "w");
+    fs.writeFileSync(fd, JSON.stringify(response.data));
+  } finally {
+    if (fd !== undefined) {
+      fs.closeSync(fd);
+    }
+  }
 }
 
 async function fetch(

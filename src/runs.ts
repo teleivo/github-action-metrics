@@ -60,14 +60,21 @@ export async function fetchRuns(
           directory,
           `/workflows/${params.workflow_id}/runs/${run.id}.json`
         );
+
         if (fs.existsSync(file)) {
           console.log("run #%d already exists in %s", run.id, file);
           continue;
         }
-        const fd = fs.openSync(file, "w");
-        fs.writeFileSync(fd, JSON.stringify(run));
-        // TODO ensure I always close the file
-        fs.closeSync(fd);
+
+        let fd;
+        try {
+          fd = fs.openSync(file, "w");
+          fs.writeFileSync(fd, JSON.stringify(run), "utf8");
+        } finally {
+          if (fd !== undefined) {
+            fs.closeSync(fd);
+          }
+        }
       }
     }
   } catch (error) {
