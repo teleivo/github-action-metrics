@@ -48,9 +48,7 @@ export async function fetchRuns(
 
     const iterator = octokit.paginate.iterator(
       octokit.rest.actions.listWorkflowRuns,
-      {
-        ...params,
-      }
+      params
     );
 
     for await (const { data: runs } of iterator) {
