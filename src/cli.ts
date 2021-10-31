@@ -23,7 +23,7 @@ export function cli(args: string[]) {
       parseInt
     )
     .requiredOption(
-      "-d, --directory <value>",
+      "-d, --destination <value>",
       "Directory where GitHub action payloads will be stored"
     )
     .option(
@@ -58,9 +58,9 @@ export function cli(args: string[]) {
 function executeRuns(options: any): void {
   let dir: string;
   try {
-    dir = path.resolve(options.directory);
+    dir = path.resolve(options.destination);
     if (!fs.lstatSync(dir).isDirectory()) {
-      console.error(`${options.directory} must be a directory`);
+      console.error(`${options.destination} must be a directory`);
       process.exit(1);
     }
   } catch (err) {
@@ -81,9 +81,9 @@ function executeRuns(options: any): void {
 function executeJobs(options: any): void {
   let dir: string;
   try {
-    dir = path.resolve(options.directory);
+    dir = path.resolve(options.destination);
     if (!fs.lstatSync(dir).isDirectory()) {
-      console.error(`${options.directory} must be a directory`);
+      console.error(`${options.destination} must be a directory`);
       process.exit(1);
     }
   } catch (err) {
