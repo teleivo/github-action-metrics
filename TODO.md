@@ -49,6 +49,15 @@ retryAfter: 16
 - ingest data
 - create first visualization for for example how did the "Run integration tests" step evolve over time?
 
+## Elastic
+
+- automate kibana index pattern creation?
+- and runtime field `duration` format into human readable
+- can I automatically index steps array separately? Or at least not let ES
+  merge the array into one single field?
+- get rid of security warning in kibana
+  https://www.elastic.co/guide/en/elasticsearch/reference/7.15/security-minimal-setup.html
+
 ## Whishlist
 
 - can I fetch the workflowId so it can be passed by name in the CLI?
