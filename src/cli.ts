@@ -31,6 +31,7 @@ export function cli(args: string[]) {
       "Date the run was created in format like '2021-10-12' or '2021-10-29T22:40:19Z'"
     )
     .option("-t, --token <value>", "GitHub access token")
+    .option("-j, --with-jobs", "Fetch jobs for fetched runs")
     .action(executeRuns);
 
   program
@@ -76,14 +77,17 @@ async function executeRuns(options: any): Promise<void> {
     options.created,
     options.token
   );
-  fetchJobs(
-    options.repo,
-    options.owner,
-    options.workflowId,
-    dir,
-    runIds,
-    options.token
-  );
+
+  if (options.withJobs) {
+    fetchJobs(
+      options.repo,
+      options.owner,
+      options.workflowId,
+      dir,
+      runIds,
+      options.token
+    );
+  }
 }
 
 function executeJobs(options: any): void {
