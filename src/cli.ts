@@ -4,7 +4,7 @@ import * as fs from "fs";
 import { Command } from "commander";
 
 import { fetchRuns } from "./runs";
-import fetchAllJobs from "./jobs";
+import { fetchStoredRunJobs, fetchJobs } from "./jobs";
 
 export function cli(args: string[]) {
   const program = new Command();
@@ -55,7 +55,7 @@ export function cli(args: string[]) {
   program.parse(args);
 }
 
-function executeRuns(options: any): void {
+async function executeRuns(options: any): Promise<void> {
   let dir: string;
   try {
     dir = path.resolve(options.destination);
@@ -68,12 +68,20 @@ function executeRuns(options: any): void {
     process.exit(1);
   }
 
-  fetchRuns(
+  const runIds = await fetchRuns(
     options.repo,
     options.owner,
     options.workflowId,
     dir,
     options.created,
+    options.token
+  );
+  fetchJobs(
+    options.repo,
+    options.owner,
+    options.workflowId,
+    dir,
+    runIds,
     options.token
   );
 }
@@ -90,7 +98,7 @@ function executeJobs(options: any): void {
     console.error(err);
     process.exit(1);
   }
-  fetchAllJobs(
+  fetchStoredRunJobs(
     options.repo,
     options.owner,
     options.workflowId,

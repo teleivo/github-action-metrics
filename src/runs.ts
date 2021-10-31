@@ -17,7 +17,7 @@ export async function fetchRuns(
   directory: string,
   created: string,
   token: string
-) {
+): Promise<number[]> {
   const octokit = new Octokit({
     auth: token,
   });
@@ -51,6 +51,7 @@ export async function fetchRuns(
       params
     );
 
+    const runIds = [];
     for await (const { data: runs } of iterator) {
       for (const run of runs) {
         console.log("Run #%d", run.id);
@@ -73,10 +74,14 @@ export async function fetchRuns(
             fs.closeSync(fd);
           }
         }
+
+        runIds.push(run.id);
       }
     }
+
+    return runIds;
   } catch (error) {
     console.error(error);
-    return;
+    return [];
   }
 }

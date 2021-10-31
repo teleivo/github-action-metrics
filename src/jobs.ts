@@ -4,7 +4,7 @@ import * as path from "path";
 import { Octokit } from "octokit";
 import { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods";
 
-async function fetchJobs(
+async function fetch(
   params: RestEndpointMethodTypes["actions"]["listJobsForWorkflowRun"]["parameters"],
   workflowId: number,
   directory: string,
@@ -52,7 +52,7 @@ async function fetchJobs(
   }
 }
 
-async function fetch(
+export async function fetchStoredRunJobs(
   repo: string,
   owner: string,
   workflowId: number,
@@ -72,17 +72,19 @@ async function fetch(
       console.log(`failed to parse runId from file ${dirent.name}`);
       continue;
     }
-    fetchJobs({ owner, repo, run_id: runId }, workflowId, directory, token);
+    fetch({ owner, repo, run_id: runId }, workflowId, directory, token);
   }
 }
 
-function fetchAllJobs(
+export function fetchJobs(
   repo: string,
   owner: string,
   workflowId: number,
   directory: string,
+  runIds: number[],
   token: string
 ) {
-  fetch(repo, owner, workflowId, directory, token);
+  for (const runId of runIds) {
+    fetch({ owner, repo, run_id: runId }, workflowId, directory, token);
+  }
 }
-export default fetchAllJobs;
