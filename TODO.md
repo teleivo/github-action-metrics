@@ -4,11 +4,8 @@
 
 ## CLI
 
+- make fetching jobs after runs default? or configurable?
 - cleanup CLI code (reuse options, extract action handlers?)
-- can I chain fetching runs and jobs in the CLI? So I do not have to run them
-  one by one
-- can I chain the above with jobs by passing the runIds from the fetched ones
-  into this task :)
 
 ## GitHub actions
 
