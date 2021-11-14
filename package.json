@@ -1,9 +1,10 @@
 {
   "name": "@teleivo/github-action-metrics",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Fetch run & job details via the GitHub Action API",
   "publishConfig": {
-    "@teleivo:registry": "https://npm.pkg.github.com"
+    "@teleivo:registry": "https://npm.pkg.github.com",
+    "access": "public"
   },
   "bin": {
     "gham": "bin/gham"
