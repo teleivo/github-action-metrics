@@ -6,16 +6,9 @@ updates:
       interval: "daily"
     pull-request-branch-name:
       separator: "-"
-    commit-message:
-      prefix: "github-actions"
-      include: "scope"
-
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "daily"
     pull-request-branch-name:
       separator: "-"
-    commit-message:
-      prefix: "npm"
-      include: "scope"
