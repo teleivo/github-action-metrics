@@ -1,6 +1,6 @@
 {
   "name": "@teleivo/github-action-metrics",
-  "version": "0.0.2",
+  "version": "0.0.0-development",
   "description": "Fetch run & job details via the GitHub Action API",
   "publishConfig": {
     "@teleivo:registry": "https://npm.pkg.github.com",
@@ -11,14 +11,15 @@
   },
   "scripts": {
     "build": "tsc",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "semantic-release": "semantic-release"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/teleivo/github-action-metrics.git"
+    "url": "https://github.com/teleivo/github-action-metrics.git"
   },
   "author": "teleivo",
   "license": "MIT",
@@ -32,8 +33,11 @@
     "octokit": "^1.7.0"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "^6.0.1",
+    "@semantic-release/git": "^10.0.1",
     "@tsconfig/node12": "^1.0.9",
     "husky": "^7.0.4",
-    "lint-staged": "^11.2.6"
+    "lint-staged": "^11.2.6",
+    "semantic-release": "^18.0.0"
   }
 }
