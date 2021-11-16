@@ -1,5 +1,9 @@
 # TODO
 
+- change released version to be 0.0.1
+- add a changelog to the release
+- add a pre-commit hook for checking semantic commits so release works as
+  expected
 - create README. mention without token you risk hitting rate limit
 
 ## CLI
