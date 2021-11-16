@@ -13,7 +13,7 @@
       "@semantic-release/git",
       {
         "assets": ["CHANGELOG.md"],
-        "message": "chore: release ${nextRelease.gitTag}\n\n[skip ci]"
+        "message": "chore: release ${nextRelease.gitTag}"
       }
     ],
     "@semantic-release/npm",
