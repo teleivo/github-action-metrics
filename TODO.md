@@ -1,9 +1,6 @@
 # TODO
 
-- change released version to be 0.0.1
 - add a changelog to the release
-- add a pre-commit hook for checking semantic commits so release works as
-  expected
 - create README. mention without token you risk hitting rate limit
 
 ## CLI
@@ -13,8 +10,6 @@
 
 ## GitHub actions
 
-- create GitHub workflow to create a release once a version tag is pushed
-- publish CLI to GitHub packages
 - use CLI package in other repo in a GitHub action using cron to fetch and
   store the action payloads
 - reuse the OctoKit instance as I assume that has some state to make sure I
@@ -48,10 +43,6 @@ retryAfter: 16
 
 - rethink log messages
 - add debug flag to reduce logging to a minimum
-
-- setup ELK stack
-- ingest data
-- create first visualization for for example how did the "Run integration tests" step evolve over time?
 
 ## Elastic
 
