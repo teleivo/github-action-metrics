@@ -1,0 +1,17 @@
+.husky
+.github
+.prettierignore
+
+src
+examples
+
+*.log
+*.sh
+*.js
+*.yml
+*.json
+*.tgz
+
+*.md
+
+!dist/*.js
