@@ -5,7 +5,6 @@
 Analyze your [GitHub Actions](https://github.com/features/actions)!
 
 Do you wonder
-
 - why PRs take so long to be checked by your GitHub actions?
 - how often PRs fail to pass a certain workflow, job or step?
 - if caching dependencies did make a job run faster?
