@@ -1,7 +1,6 @@
 # TODO
 
 - add a changelog to the release
-- create README. mention without token you risk hitting rate limit
 
 ## CLI
 
