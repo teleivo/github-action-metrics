@@ -1,16 +1,12 @@
 # TODO
 
-- add a changelog to the release
-
 ## CLI
 
 - make fetching jobs after runs default? or configurable?
 - cleanup CLI code (reuse options, extract action handlers?)
 
-## GitHub actions
+## General
 
-- use CLI package in other repo in a GitHub action using cron to fetch and
-  store the action payloads
 - reuse the OctoKit instance as I assume that has some state to make sure I
   keep below the ratelimit
 
