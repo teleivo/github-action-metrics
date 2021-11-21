@@ -41,12 +41,12 @@ retryAfter: 16
 
 ## Elastic
 
+- fix indexing which now requires credentials
 - automate kibana index pattern creation?
+- create a backup/snapshot, also from kibana and try to restore?
 - and runtime field `duration` format into human readable
 - can I automatically index steps array separately? Or at least not let ES
   merge the array into one single field?
-- get rid of security warning in kibana
-  https://www.elastic.co/guide/en/elasticsearch/reference/7.15/security-minimal-setup.html
 
 ## Whishlist
 
