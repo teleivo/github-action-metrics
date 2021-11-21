@@ -129,18 +129,10 @@ async function ingestSteps(node: string, workflowId: number, srcDir: string) {
   console.log(result);
 }
 
-ingestRuns(
-  "http://localhost:9200",
-  10954,
-  "/home/ivo/code/dhis2/dhis2-github-action-metrics/data"
-);
-ingestJobs(
-  "http://localhost:9200",
-  10954,
-  "/home/ivo/code/dhis2/dhis2-github-action-metrics/data"
-);
+ingestRuns("http://localhost:9200", 10954, "/home/ivo/code/dhis2/metrics/data");
+ingestJobs("http://localhost:9200", 10954, "/home/ivo/code/dhis2/metrics/data");
 ingestSteps(
   "http://localhost:9200",
   10954,
-  "/home/ivo/code/dhis2/dhis2-github-action-metrics/data"
+  "/home/ivo/code/dhis2/metrics/data"
 );
