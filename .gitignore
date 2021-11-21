@@ -119,3 +119,6 @@ dist
 
 # ignore compiler output
 dist
+
+# ignore kibana config containing password
+elk/config/kib01.yml
