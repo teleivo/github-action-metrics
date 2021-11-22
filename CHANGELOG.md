@@ -1,3 +1,9 @@
+# [1.0.0-alpha.4](https://github.com/teleivo/github-action-metrics/compare/v1.0.0-alpha.3...v1.0.0-alpha.4) (2021-11-22)
+
+### Features
+
+- add index command ([2fa893a](https://github.com/teleivo/github-action-metrics/commit/2fa893a9c48180d144ae1c23ec4757e8a50cdc12))
+
 # [1.0.0-alpha.3](https://github.com/teleivo/github-action-metrics/compare/v1.0.0-alpha.2...v1.0.0-alpha.3) (2021-11-21)
 
 ### Bug Fixes
