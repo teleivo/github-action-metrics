@@ -4,12 +4,7 @@ import path from "path";
 import { Client } from "@elastic/elasticsearch";
 
 // TODO expose this in the CLI
-// gm ingest runs
 // gm ingest jobs
-
-// rename others into subcommands?
-// gm fetch runs
-// gm fetch jobs
 
 // TODO ingest jobs
 // note jobs have a total_count field with potentially multiple jobs per run.
@@ -84,8 +79,14 @@ async function* generatorSteps(workflowId: number, srcDir: string) {
   }
 }
 
-async function ingestRuns(node: string, workflowId: number, srcDir: string) {
-  const client = new Client({ node });
+export async function indexRuns(
+  node: string,
+  username: string,
+  password: string,
+  workflowId: number,
+  srcDir: string
+) {
+  const client = new Client({ node, auth: { username, password } });
   const result = await client.helpers.bulk({
     datasource: generatorRuns(workflowId, srcDir),
     // TODO add a type for the doc?
@@ -99,8 +100,14 @@ async function ingestRuns(node: string, workflowId: number, srcDir: string) {
   console.log(result);
 }
 
-async function ingestJobs(node: string, workflowId: number, srcDir: string) {
-  const client = new Client({ node });
+export async function indexJobs(
+  node: string,
+  username: string,
+  password: string,
+  workflowId: number,
+  srcDir: string
+) {
+  const client = new Client({ node, auth: { username, password } });
   const result = await client.helpers.bulk({
     datasource: generatorJobs(workflowId, srcDir),
     // TODO add a type for the doc?
@@ -114,8 +121,14 @@ async function ingestJobs(node: string, workflowId: number, srcDir: string) {
   console.log(result);
 }
 
-async function ingestSteps(node: string, workflowId: number, srcDir: string) {
-  const client = new Client({ node });
+export async function indexSteps(
+  node: string,
+  username: string,
+  password: string,
+  workflowId: number,
+  srcDir: string
+) {
+  const client = new Client({ node, auth: { username, password } });
   const result = await client.helpers.bulk({
     datasource: generatorSteps(workflowId, srcDir),
     // TODO add a type for the doc?
@@ -128,11 +141,3 @@ async function ingestSteps(node: string, workflowId: number, srcDir: string) {
 
   console.log(result);
 }
-
-ingestRuns("http://localhost:9200", 10954, "/home/ivo/code/dhis2/metrics/data");
-ingestJobs("http://localhost:9200", 10954, "/home/ivo/code/dhis2/metrics/data");
-ingestSteps(
-  "http://localhost:9200",
-  10954,
-  "/home/ivo/code/dhis2/metrics/data"
-);
