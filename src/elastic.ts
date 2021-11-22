@@ -3,9 +3,6 @@ import path from "path";
 
 import { Client } from "@elastic/elasticsearch";
 
-// TODO expose this in the CLI
-// gm ingest jobs
-
 // TODO ingest jobs
 // note jobs have a total_count field with potentially multiple jobs per run.
 // Do I want to ingest it as is? I feel like I would rather want them to be
