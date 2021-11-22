@@ -3,7 +3,8 @@
 ## CLI
 
 - make fetching jobs after runs default? or configurable?
-- cleanup CLI code (reuse options, extract action handlers?)
+- cleanup CLI code (reuse options, extract action handlers?) reuse OctoKit and
+  Elastic clients
 
 ## General
 
@@ -41,7 +42,6 @@ retryAfter: 16
 
 ## Elastic
 
-- fix indexing which now requires credentials
 - automate kibana index pattern creation?
 - create a backup/snapshot, also from kibana and try to restore?
 - and runtime field `duration` format into human readable
