@@ -3,14 +3,14 @@ import * as fs from "fs";
 
 import { Command } from "commander";
 
-import { fetchRuns } from "./runs";
-import { fetchStoredRunJobs, fetchJobs } from "./jobs";
+import { fetchRuns } from "../runs";
+import { fetchStoredRunJobs, fetchJobs } from "../jobs";
 
-export function cli(args: string[]) {
-  const program = new Command();
-  program.version("0.0.1").showHelpAfterError();
-
-  program
+export function makeFetchCommand(): Command {
+  const fetch = new Command("fetch").description(
+    "Fetch GitHub workflow runs and jobs"
+  );
+  fetch
     .command("runs")
     .description(
       "Fetch latest GitHub action runs for given workflow via https://docs.github.com/en/rest/reference/actions#list-workflow-runs"
@@ -34,7 +34,7 @@ export function cli(args: string[]) {
     .option("-j, --with-jobs", "Fetch jobs for fetched runs")
     .action(executeRuns);
 
-  program
+  fetch
     .command("jobs")
     .description(
       "Fetch all GitHub action jobs of stored runs via https://docs.github.com/en/rest/reference/actions#get-a-job-for-a-workflow-run"
@@ -51,9 +51,9 @@ export function cli(args: string[]) {
       "Directory where GitHub action payloads will be stored"
     )
     .option("-t, --token <value>", "GitHub access token")
-    .description("fetch latest runs of given GitHub workflow")
     .action(executeJobs);
-  program.parse(args);
+
+  return fetch;
 }
 
 async function executeRuns(options: any): Promise<void> {
