@@ -1,5 +1,14 @@
 #!/bin/sh
-curl -X PUT 'http://localhost:9200/steps/_mapping/?pretty' \
+# Make sure to index data into Elasticsearch first!
+#
+# Create runtime field for GitHub step duration calculated out of completed_at
+# and started_at
+# https://www.elastic.co/guide/en/elasticsearch/reference/current/runtime.html
+# Adjust if you do want to use anything other then base auth
+
+USER="$1"
+PW="$2"
+curl -X PUT -u "${USER}:${PW}" 'http://localhost:9200/steps/_mapping/?pretty' \
     -H 'Content-Type: application/json' -d'
 {
    "runtime": {
@@ -12,17 +21,3 @@ curl -X PUT 'http://localhost:9200/steps/_mapping/?pretty' \
    } 
 }
 '
-
-# curl -X PUT "localhost:9200/seats/_mapping?pretty" -H 'Content-Type: application/json' -d'
-# {
-#   "runtime": {
-#     "day_of_week": {
-#       "type": "keyword",
-#       "script": {
-#         "source": "emit(doc[\u0027datetime\u0027].value.getDayOfWeekEnum().toString())"
-#       }
-#     }
-#   }
-# }
-# '
-
