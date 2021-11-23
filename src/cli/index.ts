@@ -195,7 +195,6 @@ async function executeAll(options: any): Promise<void> {
     process.exit(1);
   }
 
-  console.log("Index runs");
   indexRuns(
     options.url,
     options.user,
@@ -203,7 +202,6 @@ async function executeAll(options: any): Promise<void> {
     options.workflowId,
     dir
   );
-  console.log("Index jobs");
   indexJobs(
     options.url,
     options.user,
@@ -211,7 +209,6 @@ async function executeAll(options: any): Promise<void> {
     options.workflowId,
     dir
   );
-  console.log("Index steps");
   indexSteps(
     options.url,
     options.user,

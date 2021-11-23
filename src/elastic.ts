@@ -94,7 +94,7 @@ export async function indexRuns(
     },
   });
 
-  console.log(result);
+  console.log("indexed runs", result);
 }
 
 export async function indexJobs(
@@ -115,7 +115,7 @@ export async function indexJobs(
     },
   });
 
-  console.log(result);
+  console.log("indexed jobs", result);
 }
 
 export async function indexSteps(
@@ -136,5 +136,5 @@ export async function indexSteps(
     },
   });
 
-  console.log(result);
+  console.log("indexed steps", result);
 }
