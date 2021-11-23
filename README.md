@@ -71,9 +71,18 @@ auto-generated.
 
 ### Index Data
 
-TODO
+Once you fetched GitHub workflow data and setup Elasticsearch and Kibana you
+can index it using
 
-## Example
+```sh
+gham index all \
+    --url http://localhost:9200 \
+    --workflow-id 10954 \
+    --source ~/metrics/data \
+    --user elastic --password $(password-manager get elasticsearch-password)
+```
+
+## Example Project
 
 I started this project to analyze the test workflow we use at
 [DHIS2](https://dhis2.org/about/). I wanted to know where time was spent, why
