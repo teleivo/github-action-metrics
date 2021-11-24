@@ -22,7 +22,7 @@ curl -s -S -X POST -u "${ELASTIC_USER}:${PW}" "localhost:5601/api/index_patterns
   "index_pattern": {
     "id": "runs",
     "title": "runs",
-    "timeFieldName": "started_at"
+    "timeFieldName": "run_started_at"
   }
 }
 '
