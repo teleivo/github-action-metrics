@@ -82,6 +82,12 @@ gham index all \
     --user elastic --password $(password-manager get elasticsearch-password)
 ```
 
+Create kibana index patterns
+
+```sh
+./elk/kibana_index_pattern.sh elastic --password $(password-manager get elasticsearch-password)
+```
+
 ## Example Project
 
 I started this project to analyze the test workflow we use at

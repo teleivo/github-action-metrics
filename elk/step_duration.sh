@@ -6,9 +6,9 @@
 # https://www.elastic.co/guide/en/elasticsearch/reference/current/runtime.html
 # Adjust if you do want to use anything other then base auth
 
-USER="$1"
+ELASTIC_USER="$1"
 PW="$2"
-curl -X PUT -u "${USER}:${PW}" 'http://localhost:9200/steps/_mapping/?pretty' \
+curl -X PUT -u "${ELASTIC_USER}:${PW}" 'http://localhost:9200/steps/_mapping/?pretty' \
     -H 'Content-Type: application/json' -d'
 {
    "runtime": {
