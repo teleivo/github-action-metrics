@@ -1,6 +1,8 @@
 #!/bin/sh
 # Make sure to index data into Elasticsearch first!
 #
+# Create Kibana index patterns for searching
+# https://www.elastic.co/guide/en/kibana/master/index-patterns-api-create.html
 # Create runtime field for GitHub step duration calculated out of completed_at
 # and started_at
 # https://www.elastic.co/guide/en/elasticsearch/reference/current/runtime.html
@@ -25,7 +27,6 @@ curl -s -S -X POST -u "${ELASTIC_USER}:${PW}" "localhost:5601/api/index_patterns
 }
 '
 
-# TODO I cannot see the runtime field duration on jobs
 echo "Create index-pattern for jobs"
 curl -s -S -X POST -u "${ELASTIC_USER}:${PW}" "localhost:5601/api/index_patterns/index_pattern" \
     -H 'kbn-xsrf: true' -H 'Content-Type: application/json' -d'
