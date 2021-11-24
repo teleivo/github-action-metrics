@@ -1,3 +1,13 @@
+# [1.0.0-alpha.2](https://github.com/teleivo/github-action-metrics/compare/v1.0.0-alpha.1...v1.0.0-alpha.2) (2021-11-24)
+
+### Bug Fixes
+
+- log what was indexed ([8e86932](https://github.com/teleivo/github-action-metrics/commit/8e86932665df4dd6947cd0a6f286f798b2fb725a))
+
+### Features
+
+- automate creating kibana index patterns ([522951c](https://github.com/teleivo/github-action-metrics/commit/522951cd6da535040609c4e4be1092ab252ca133))
+
 # 1.0.0-alpha.1 (2021-11-23)
 
 ### Bug Fixes
