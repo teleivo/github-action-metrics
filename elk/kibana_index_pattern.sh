@@ -6,7 +6,8 @@
 # Create runtime field for GitHub step duration calculated out of completed_at
 # and started_at
 # https://www.elastic.co/guide/en/elasticsearch/reference/current/runtime.html
-# Adjust if you do want to use anything other then base auth
+# https://github.com/elastic/kibana/pull/83576 for automating field formats
+# Adjust authentication if you do want to use anything other then base auth
 
 ELASTIC_USER="$1"
 PW="$2"
