@@ -43,6 +43,17 @@ curl -i --silent --show-error -X POST -u "${ELASTIC_USER}:${PW}" "localhost:5601
           "source": "emit(doc[\u0027completed_at\u0027].value.toInstant().toEpochMilli() - doc[\u0027started_at\u0027].value.toInstant().toEpochMilli())"
         }
       }
+    },
+    "fieldFormats": {
+      "duration": {
+        "id": "duration",
+        "params": {
+          "inputFormat": "milliseconds",
+          "outputFormat": "asMinutes",
+          "useShortSuffix": true,
+          "showSuffix": true
+        }
+      }
     }
   }
 }
@@ -63,6 +74,17 @@ curl -i --silent --show-error -X POST -u "${ELASTIC_USER}:${PW}" "localhost:5601
         "type": "long",
         "script": {
           "source": "emit(doc[\u0027completed_at\u0027].value.toInstant().toEpochMilli() - doc[\u0027started_at\u0027].value.toInstant().toEpochMilli())"
+        }
+      }
+    },
+    "fieldFormats": {
+      "duration": {
+        "id": "duration",
+        "params": {
+          "inputFormat": "milliseconds",
+          "outputFormat": "asMinutes",
+          "useShortSuffix": true,
+          "showSuffix": true
         }
       }
     }

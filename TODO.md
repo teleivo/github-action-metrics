@@ -43,7 +43,10 @@ retryAfter: 16
 ## Elastic
 
 - create a backup/snapshot, also from kibana and try to restore?
-- and runtime field `duration` format into human readable
+- runs do not have the completed_at property. I think I would need to embedd
+  jobs into runs so I could answer questions like `How long took successful runs of PRs to master in the last four weeks?` Or I could pre-process the
+  jobs for a run and just add fields like created_at, completed_at for the
+  first and last job to start/finish
 
 ## Whishlist
 
