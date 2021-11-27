@@ -13,8 +13,7 @@ PW="$2"
 
 # Note that runs also have a created_at field. In case you want it to be the
 # timeFieldName
-echo "Create index-pattern for runs"
-curl -s -S -X POST -u "${ELASTIC_USER}:${PW}" "localhost:5601/api/index_patterns/index_pattern" \
+curl -i --silent --show-error -X POST -u "${ELASTIC_USER}:${PW}" "localhost:5601/api/index_patterns/index_pattern" \
     -H 'kbn-xsrf: true' -H 'Content-Type: application/json' -d'
 {
   "override": true,
@@ -26,9 +25,9 @@ curl -s -S -X POST -u "${ELASTIC_USER}:${PW}" "localhost:5601/api/index_patterns
   }
 }
 '
+echo "\nCreated index-pattern for runs\n"
 
-echo "Create index-pattern for jobs"
-curl -s -S -X POST -u "${ELASTIC_USER}:${PW}" "localhost:5601/api/index_patterns/index_pattern" \
+curl -i --silent --show-error -X POST -u "${ELASTIC_USER}:${PW}" "localhost:5601/api/index_patterns/index_pattern" \
     -H 'kbn-xsrf: true' -H 'Content-Type: application/json' -d'
 {
   "override": true,
@@ -41,16 +40,16 @@ curl -s -S -X POST -u "${ELASTIC_USER}:${PW}" "localhost:5601/api/index_patterns
       "duration": {
         "type": "long",
         "script": {
-          "source": "emit(doc[\u0027completed_at\u0027].value.millis - doc[\u0027started_at\u0027].value.millis)"
+          "source": "emit(doc[\u0027completed_at\u0027].value.toInstant().toEpochMilli() - doc[\u0027started_at\u0027].value.toInstant().toEpochMilli())"
         }
       }
     }
   }
 }
 '
+echo "\nCreated index-pattern for jobs\n"
 
-echo "Create index-pattern for steps"
-curl -s -S -X POST -u "${ELASTIC_USER}:${PW}" "localhost:5601/api/index_patterns/index_pattern" \
+curl -i --silent --show-error -X POST -u "${ELASTIC_USER}:${PW}" "localhost:5601/api/index_patterns/index_pattern" \
     -H 'kbn-xsrf: true' -H 'Content-Type: application/json' -d'
 {
   "override": true,
@@ -63,10 +62,11 @@ curl -s -S -X POST -u "${ELASTIC_USER}:${PW}" "localhost:5601/api/index_patterns
       "duration": {
         "type": "long",
         "script": {
-          "source": "emit(doc[\u0027completed_at\u0027].value.millis - doc[\u0027started_at\u0027].value.millis)"
+          "source": "emit(doc[\u0027completed_at\u0027].value.toInstant().toEpochMilli() - doc[\u0027started_at\u0027].value.toInstant().toEpochMilli())"
         }
       }
     }
   }
 }
 '
+echo "\nCreated index-pattern for steps\n"

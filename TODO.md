@@ -42,11 +42,8 @@ retryAfter: 16
 
 ## Elastic
 
-- automate kibana index pattern creation?
 - create a backup/snapshot, also from kibana and try to restore?
 - and runtime field `duration` format into human readable
-- can I automatically index steps array separately? Or at least not let ES
-  merge the array into one single field?
 
 ## Whishlist
 
