@@ -1,3 +1,9 @@
+# [1.0.0-alpha.5](https://github.com/teleivo/github-action-metrics/compare/v1.0.0-alpha.4...v1.0.0-alpha.5) (2021-11-27)
+
+### Features
+
+- format duration in human readable format ([0e0dee3](https://github.com/teleivo/github-action-metrics/commit/0e0dee3b1742d48346baf069a92d90ccda570b16))
+
 # [1.0.0-alpha.4](https://github.com/teleivo/github-action-metrics/compare/v1.0.0-alpha.3...v1.0.0-alpha.4) (2021-11-27)
 
 ### Bug Fixes
