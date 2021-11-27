@@ -1,3 +1,9 @@
+# [1.0.0-alpha.4](https://github.com/teleivo/github-action-metrics/compare/v1.0.0-alpha.3...v1.0.0-alpha.4) (2021-11-27)
+
+### Bug Fixes
+
+- replace deprecated method in index pattern creation ([8fd46b7](https://github.com/teleivo/github-action-metrics/commit/8fd46b73137075be8b894d40222515c24c3eff1e))
+
 # [1.0.0-alpha.3](https://github.com/teleivo/github-action-metrics/compare/v1.0.0-alpha.2...v1.0.0-alpha.3) (2021-11-24)
 
 ### Bug Fixes
