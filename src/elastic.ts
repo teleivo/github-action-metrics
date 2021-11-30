@@ -3,12 +3,6 @@ import path from "path";
 
 import { Client } from "@elastic/elasticsearch";
 
-// TODO ingest jobs
-// note jobs have a total_count field with potentially multiple jobs per run.
-// Do I want to ingest it as is? I feel like I would rather want them to be
-// ingested separately so the job will have an appropriate mapping in ES as
-// well :) each job already has the run_id as a field so I can tie it back
-// together with its run :)
 async function* generatorRuns(workflowId: number, srcDir: string) {
   const file = path.join(srcDir, `/workflows/${workflowId}/runs/`);
   const dir = fs.opendirSync(file);
@@ -16,13 +10,25 @@ async function* generatorRuns(workflowId: number, srcDir: string) {
     if (!dirent.isFile()) {
       continue;
     }
-    const runId = Number(path.parse(dirent.name).name);
-    if (Number.isNaN(runId)) {
-      console.log(`failed to parse runId from file ${dirent.name}`);
+
+    let result;
+    try {
+      const run = JSON.parse(
+        fs.readFileSync(path.join(file, dirent.name), "utf8")
+      );
+      const jobs = JSON.parse(
+        fs.readFileSync(
+          path.join(srcDir, `/workflows/${workflowId}/jobs/${run.id}.json`),
+          "utf8"
+        )
+      );
+      result = { ...run, ...runDuration(jobs) };
+    } catch (err) {
+      console.error(err);
       continue;
     }
-    const data = fs.readFileSync(path.join(file, dirent.name), "utf8");
-    yield JSON.parse(data);
+
+    yield result;
   }
 }
 
@@ -31,11 +37,6 @@ async function* generatorJobs(workflowId: number, srcDir: string) {
   const dir = fs.opendirSync(file);
   for await (const dirent of dir) {
     if (!dirent.isFile()) {
-      continue;
-    }
-    const runId = Number(path.parse(dirent.name).name);
-    if (Number.isNaN(runId)) {
-      console.log(`failed to parse runId from file ${dirent.name}`);
       continue;
     }
     const data = fs.readFileSync(path.join(file, dirent.name), "utf8");
@@ -65,6 +66,8 @@ async function* generatorSteps(workflowId: number, srcDir: string) {
           ...step,
           job_id: job.id,
           job_name: job.name,
+          job_url: job.url,
+          job_html_url: job.html_url,
           run_id: job.run_id,
           run_url: job.run_url,
           run_html_url: job.html_url,
@@ -137,4 +140,43 @@ export async function indexSteps(
   });
 
   console.log("indexed steps", result);
+}
+
+type RunDuration = {
+  jobs_started_at: string;
+  jobs_started_at_id: string;
+  jobs_started_at_name: string;
+  jobs_started_at_url: string;
+  jobs_started_at_html_url: string;
+  jobs_completed_at: string;
+  jobs_completed_at_id: string;
+  jobs_completed_at_name: string;
+  jobs_completed_at_url: string;
+  jobs_completed_at_html_url: string;
+};
+
+export function runDuration(jobs: any): RunDuration | {} {
+  return jobs.jobs.reduce((run: any, j: any) => {
+    if (
+      !run.jobs_started_at ||
+      new Date(j.started_at) < new Date(run.jobs_started_at)
+    ) {
+      run.jobs_started_at = j.started_at;
+      run.jobs_started_at_id = j.id;
+      run.jobs_started_at_name = j.name;
+      run.jobs_started_at_url = j.url;
+      run.jobs_started_at_html_url = j.html_url;
+    }
+    if (
+      !run.jobs_completed_at ||
+      new Date(j.completed_at) > new Date(run.jobs_completed_at)
+    ) {
+      run.jobs_completed_at = j.completed_at;
+      run.jobs_completed_at_id = j.id;
+      run.jobs_completed_at_name = j.name;
+      run.jobs_completed_at_url = j.url;
+      run.jobs_completed_at_html_url = j.html_url;
+    }
+    return run;
+  }, {});
 }

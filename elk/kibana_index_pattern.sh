@@ -22,7 +22,27 @@ curl -i --silent --show-error -X POST -u "${ELASTIC_USER}:${PW}" "localhost:5601
   "index_pattern": {
     "id": "runs",
     "title": "runs",
-    "timeFieldName": "run_started_at"
+    "timeFieldName": "run_started_at",
+    "runtimeFieldMap": {
+      "duration": {
+        "type": "long",
+        "script": {
+          "source":
+          "emit(doc[\u0027jobs_completed_at\u0027].value.toInstant().toEpochMilli() - doc[\u0027jobs_started_at\u0027].value.toInstant().toEpochMilli())"
+        }
+      }
+    },
+    "fieldFormats": {
+      "duration": {
+        "id": "duration",
+        "params": {
+          "inputFormat": "milliseconds",
+          "outputFormat": "asMinutes",
+          "useShortSuffix": true,
+          "showSuffix": true
+        }
+      }
+    }
   }
 }
 '

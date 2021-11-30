@@ -47,6 +47,11 @@ retryAfter: 16
   jobs into runs so I could answer questions like `How long took successful runs of PRs to master in the last four weeks?` Or I could pre-process the
   jobs for a run and just add fields like created_at, completed_at for the
   first and last job to start/finish
+- explore created_at and run_started_at difference does that tell me how long
+  we waited for it to be scheduled? that would be an interesting metric
+- make runtime field duration resilient to no timings being present? what would
+  be a useful default value so I can filter them out in computations/graphs
+  later on?
 
 ## Whishlist
 
