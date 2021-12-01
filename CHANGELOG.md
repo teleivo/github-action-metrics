@@ -1,3 +1,13 @@
+# [1.0.0-alpha.6](https://github.com/teleivo/github-action-metrics/compare/v1.0.0-alpha.5...v1.0.0-alpha.6) (2021-12-01)
+
+### Bug Fixes
+
+- adjust job cli to match run cli ([97db187](https://github.com/teleivo/github-action-metrics/commit/97db187dc815b17491e30ace49333d9099c0e02d))
+
+### Features
+
+- extract job duration information into run index ([1a22193](https://github.com/teleivo/github-action-metrics/commit/1a22193fa77b3f9435996aaa06470256ed068bcd))
+
 # [1.0.0-alpha.5](https://github.com/teleivo/github-action-metrics/compare/v1.0.0-alpha.4...v1.0.0-alpha.5) (2021-11-27)
 
 ### Features
