@@ -47,7 +47,7 @@ export function makeFetchCommand(): Command {
       parseInt
     )
     .requiredOption(
-      "-d, --directory <value>",
+      "-d, --destination <value>",
       "Directory where GitHub action payloads will be stored"
     )
     .option("-t, --token <value>", "GitHub access token")
