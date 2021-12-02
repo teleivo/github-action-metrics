@@ -27,8 +27,7 @@ curl -i --silent --show-error -X POST -u "${ELASTIC_USER}:${PW}" "localhost:5601
       "duration": {
         "type": "long",
         "script": {
-          "source":
-          "emit(doc[\u0027jobs_completed_at\u0027].value.toInstant().toEpochMilli() - doc[\u0027jobs_started_at\u0027].value.toInstant().toEpochMilli())"
+          "source": "if (doc[\u0027jobs_completed_at\u0027].size() == 0) { emit(0) } else { emit(doc[\u0027jobs_completed_at\u0027].value.toInstant().toEpochMilli() - doc[\u0027jobs_started_at\u0027].value.toInstant().toEpochMilli()) }"
         }
       }
     },
