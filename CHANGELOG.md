@@ -1,3 +1,9 @@
+# [1.0.0-alpha.7](https://github.com/teleivo/github-action-metrics/compare/v1.0.0-alpha.6...v1.0.0-alpha.7) (2021-12-02)
+
+### Bug Fixes
+
+- make duration resilient to runs without jobs ([d1c9cef](https://github.com/teleivo/github-action-metrics/commit/d1c9cef23b288d0ccf08327e0e9dc08a31347c09))
+
 # [1.0.0-alpha.6](https://github.com/teleivo/github-action-metrics/compare/v1.0.0-alpha.5...v1.0.0-alpha.6) (2021-12-01)
 
 ### Bug Fixes
