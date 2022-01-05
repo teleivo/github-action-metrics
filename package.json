@@ -42,7 +42,7 @@
     "@tsconfig/node12": "^1.0.9",
     "@types/jest": "^27.4.0",
     "husky": "^7.0.4",
-    "jest": "^27.4.5",
+    "jest": "^27.4.6",
     "lint-staged": "^12.1.4",
     "prettier": "2.5.1",
     "semantic-release": "^18.0.1",
