@@ -11,7 +11,7 @@ jobs:
       packages: write
       contents: write
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3.0.0
         with:
           node-version: 14
