@@ -38,6 +38,6 @@
     "@tsconfig/node12": "^1.0.9",
     "husky": "^7.0.4",
     "lint-staged": "^12.1.2",
-    "semantic-release": "^18.0.0"
+    "semantic-release": "^19.0.3"
   }
 }
