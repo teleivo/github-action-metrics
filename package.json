@@ -32,7 +32,7 @@
   "dependencies": {
     "@elastic/elasticsearch": "^7.17.0",
     "commander": "^9.3.0",
-    "octokit": "^2.0.3"
+    "octokit": "^2.0.4"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.0.3",
