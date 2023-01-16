@@ -31,7 +31,7 @@
   "homepage": "https://github.com/teleivo/github-action-metrics#readme",
   "dependencies": {
     "@elastic/elasticsearch": "^7.17.0",
-    "commander": "^9.5.0",
+    "commander": "^10.0.0",
     "octokit": "^2.0.11"
   },
   "devDependencies": {
