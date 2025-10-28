@@ -22,13 +22,13 @@ export async function fetchRuns(
     auth: token,
   });
 
-  octokit.hook.after("request", async (response, options) => {
+  octokit.hook.after("request", async (response: any, options: any) => {
     const ratelimit = `${response.headers["x-ratelimit-used"]}/${response.headers["x-ratelimit-limit"]}`;
     console.log(
       `requested ${options.method} ${options.url}: ${response.status} ratelimit ${ratelimit}`
     );
   });
-  octokit.hook.error("request", async (error, _) => {
+  octokit.hook.error("request", async (error: any, _: any) => {
     console.error(error);
   });
 
