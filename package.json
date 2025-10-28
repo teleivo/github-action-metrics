@@ -1,6 +1,6 @@
 {
   "name": "@teleivo/github-action-metrics",
-  "version": "1.0.0-alpha.7",
+  "version": "1.0.0-alpha.8",
   "description": "Fetch run & job details via the GitHub Action API",
   "publishConfig": {
     "@teleivo:registry": "https://npm.pkg.github.com",

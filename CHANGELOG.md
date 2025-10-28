@@ -1,3 +1,9 @@
+# [1.0.0-alpha.8](https://github.com/teleivo/github-action-metrics/compare/v1.0.0-alpha.7...v1.0.0-alpha.8) (2025-10-28)
+
+### Bug Fixes
+
+- cves ([bc55076](https://github.com/teleivo/github-action-metrics/commit/bc55076808cb294c08c3bdc0923ed11d03f2a2d0))
+
 # [1.0.0-alpha.7](https://github.com/teleivo/github-action-metrics/compare/v1.0.0-alpha.6...v1.0.0-alpha.7) (2021-12-02)
 
 ### Bug Fixes
