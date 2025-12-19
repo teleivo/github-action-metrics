@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
+	"log/slog"
 	"strconv"
 	"strings"
 
@@ -19,19 +19,19 @@ func IndexRuns(ctx context.Context, client *Client, store *storage.Store, workfl
 		defer close(docs)
 		for data, err := range store.IterRuns(workflowID) {
 			if err != nil {
-				log.Printf("error reading run: %v", err)
+				slog.Warn("error reading run", "error", err)
 				continue
 			}
 
 			var run map[string]any
 			if err := json.Unmarshal(data, &run); err != nil {
-				log.Printf("error unmarshaling run: %v", err)
+				slog.Warn("error unmarshaling run", "error", err)
 				continue
 			}
 
 			runID, ok := run["id"].(float64)
 			if !ok {
-				log.Printf("run missing id field")
+				slog.Warn("run missing id field")
 				continue
 			}
 
@@ -56,7 +56,7 @@ func IndexRuns(ctx context.Context, client *Client, store *storage.Store, workfl
 			}
 
 			docs <- Document{
-				ID:   fmt.Sprintf("%.0f", runID),
+				ID:   strconv.FormatInt(int64(runID), 10),
 				Body: run,
 			}
 		}
@@ -67,7 +67,7 @@ func IndexRuns(ctx context.Context, client *Client, store *storage.Store, workfl
 		return result, fmt.Errorf("indexing runs: %w", err)
 	}
 
-	log.Printf("indexed runs: %+v", result)
+	slog.Info("indexed runs", "total", result.Total, "successful", result.Successful, "failed", result.Failed)
 	return result, nil
 }
 
@@ -79,7 +79,7 @@ func IndexJobs(ctx context.Context, client *Client, store *storage.Store, workfl
 		defer close(docs)
 		for data, err := range store.IterJobs(workflowID) {
 			if err != nil {
-				log.Printf("error reading jobs: %v", err)
+				slog.Warn("error reading jobs", "error", err)
 				continue
 			}
 
@@ -87,7 +87,7 @@ func IndexJobs(ctx context.Context, client *Client, store *storage.Store, workfl
 				Jobs []map[string]any `json:"jobs"`
 			}
 			if err := json.Unmarshal(data, &jobsResp); err != nil {
-				log.Printf("error unmarshaling jobs: %v", err)
+				slog.Warn("error unmarshaling jobs", "error", err)
 				continue
 			}
 
@@ -97,7 +97,7 @@ func IndexJobs(ctx context.Context, client *Client, store *storage.Store, workfl
 					continue
 				}
 				docs <- Document{
-					ID:   fmt.Sprintf("%.0f", jobID),
+					ID:   strconv.FormatInt(int64(jobID), 10),
 					Body: job,
 				}
 			}
@@ -109,7 +109,7 @@ func IndexJobs(ctx context.Context, client *Client, store *storage.Store, workfl
 		return result, fmt.Errorf("indexing jobs: %w", err)
 	}
 
-	log.Printf("indexed jobs: %+v", result)
+	slog.Info("indexed jobs", "total", result.Total, "successful", result.Successful, "failed", result.Failed)
 	return result, nil
 }
 
@@ -121,7 +121,7 @@ func IndexSteps(ctx context.Context, client *Client, store *storage.Store, workf
 		defer close(docs)
 		for data, err := range store.IterJobs(workflowID) {
 			if err != nil {
-				log.Printf("error reading jobs: %v", err)
+				slog.Warn("error reading jobs", "error", err)
 				continue
 			}
 
@@ -129,7 +129,7 @@ func IndexSteps(ctx context.Context, client *Client, store *storage.Store, workf
 				Jobs []map[string]any `json:"jobs"`
 			}
 			if err := json.Unmarshal(data, &jobsResp); err != nil {
-				log.Printf("error unmarshaling jobs: %v", err)
+				slog.Warn("error unmarshaling jobs", "error", err)
 				continue
 			}
 
@@ -142,6 +142,9 @@ func IndexSteps(ctx context.Context, client *Client, store *storage.Store, workf
 				runURL, _ := job["run_url"].(string)
 				runAttempt, _ := job["run_attempt"].(float64)
 				headSHA, _ := job["head_sha"].(string)
+
+				// Convert API URL to HTML URL: api.github.com/repos/... -> github.com/...
+				runHTMLURL := strings.Replace(runURL, "api.github.com/repos", "github.com", 1)
 
 				stepsRaw, ok := job["steps"].([]any)
 				if !ok {
@@ -163,12 +166,12 @@ func IndexSteps(ctx context.Context, client *Client, store *storage.Store, workf
 					step["job_html_url"] = jobHTMLURL
 					step["run_id"] = runID
 					step["run_url"] = runURL
-					step["run_html_url"] = jobHTMLURL // Note: matches original TS behavior (bug)
+					step["run_html_url"] = runHTMLURL
 					step["run_attempt"] = runAttempt
 					step["head_sha"] = headSHA
 
 					docs <- Document{
-						ID:   fmt.Sprintf("%.0f", jobID) + "-" + strings.TrimSuffix(strconv.FormatFloat(stepNumber, 'f', -1, 64), ".0"),
+						ID:   strconv.FormatInt(int64(jobID), 10) + "-" + strconv.FormatInt(int64(stepNumber), 10),
 						Body: step,
 					}
 				}
@@ -181,7 +184,7 @@ func IndexSteps(ctx context.Context, client *Client, store *storage.Store, workf
 		return result, fmt.Errorf("indexing steps: %w", err)
 	}
 
-	log.Printf("indexed steps: %+v", result)
+	slog.Info("indexed steps", "total", result.Total, "successful", result.Successful, "failed", result.Failed)
 	return result, nil
 }
 

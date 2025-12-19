@@ -32,8 +32,33 @@ type FetchJobsConfig struct {
 	Token       string
 }
 
+// resolveDirectory resolves a path to an absolute directory path.
+// Returns an error if the path doesn't exist or isn't a directory.
+func resolveDirectory(path string) (string, error) {
+	dir, err := filepath.Abs(path)
+	if err != nil {
+		return "", fmt.Errorf("resolving path: %w", err)
+	}
+	info, err := os.Stat(dir)
+	if err != nil {
+		return "", err
+	}
+	if !info.IsDir() {
+		return "", fmt.Errorf("%s must be a directory", dir)
+	}
+	return dir, nil
+}
+
+// resolveToken returns the token from the flag or falls back to GITHUB_TOKEN env var.
+func resolveToken(token string) string {
+	if token != "" {
+		return token
+	}
+	return os.Getenv("GITHUB_TOKEN")
+}
+
 // HandleFetch handles the fetch command and its subcommands.
-func HandleFetch(args []string) {
+func HandleFetch(ctx context.Context, args []string) {
 	if len(args) < 1 {
 		printFetchUsage()
 		os.Exit(1)
@@ -41,9 +66,9 @@ func HandleFetch(args []string) {
 
 	switch args[0] {
 	case "runs":
-		handleFetchRuns(args[1:])
+		handleFetchRuns(ctx, args[1:])
 	case "jobs":
-		handleFetchJobs(args[1:])
+		handleFetchJobs(ctx, args[1:])
 	default:
 		printFetchUsage()
 		os.Exit(1)
@@ -60,7 +85,7 @@ Commands:
 Run 'gham fetch <command> -h' for more information on a command.`)
 }
 
-func handleFetchRuns(args []string) {
+func handleFetchRuns(ctx context.Context, args []string) {
 	fs := flag.NewFlagSet("fetch runs", flag.ExitOnError)
 	fs.Usage = func() {
 		fmt.Fprintln(os.Stderr, `Usage: gham fetch runs [options]
@@ -90,26 +115,10 @@ Options:`)
 		os.Exit(1)
 	}
 
-	// Resolve and validate destination
-	dir, err := filepath.Abs(*destination)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error resolving destination: %v\n", err)
-		os.Exit(1)
-	}
-	info, err := os.Stat(dir)
+	dir, err := resolveDirectory(*destination)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
-	}
-	if !info.IsDir() {
-		fmt.Fprintf(os.Stderr, "Error: %s must be a directory\n", dir)
-		os.Exit(1)
-	}
-
-	// Get token from flag or environment
-	authToken := *token
-	if authToken == "" {
-		authToken = os.Getenv("GITHUB_TOKEN")
 	}
 
 	config := &FetchRunsConfig{
@@ -118,17 +127,17 @@ Options:`)
 		WorkflowID:  *workflowID,
 		Destination: dir,
 		Created:     *created,
-		Token:       authToken,
+		Token:       resolveToken(*token),
 		WithJobs:    *withJobs,
 	}
 
-	if err := executeFetchRuns(config); err != nil {
+	if err := executeFetchRuns(ctx, config); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
 }
 
-func executeFetchRuns(config *FetchRunsConfig) error {
+func executeFetchRuns(ctx context.Context, config *FetchRunsConfig) error {
 	store, err := storage.NewStore(config.Destination)
 	if err != nil {
 		return err
@@ -141,7 +150,6 @@ func executeFetchRuns(config *FetchRunsConfig) error {
 		opts.Created = config.Created
 	}
 
-	ctx := context.Background()
 	runIDs, err := github.FetchRuns(ctx, client, config.Owner, config.Repo, config.WorkflowID, store, opts)
 	if err != nil {
 		return err
@@ -156,7 +164,7 @@ func executeFetchRuns(config *FetchRunsConfig) error {
 	return nil
 }
 
-func handleFetchJobs(args []string) {
+func handleFetchJobs(ctx context.Context, args []string) {
 	fs := flag.NewFlagSet("fetch jobs", flag.ExitOnError)
 	fs.Usage = func() {
 		fmt.Fprintln(os.Stderr, `Usage: gham fetch jobs [options]
@@ -184,26 +192,10 @@ Options:`)
 		os.Exit(1)
 	}
 
-	// Resolve and validate destination
-	dir, err := filepath.Abs(*destination)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error resolving destination: %v\n", err)
-		os.Exit(1)
-	}
-	info, err := os.Stat(dir)
+	dir, err := resolveDirectory(*destination)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
-	}
-	if !info.IsDir() {
-		fmt.Fprintf(os.Stderr, "Error: %s must be a directory\n", dir)
-		os.Exit(1)
-	}
-
-	// Get token from flag or environment
-	authToken := *token
-	if authToken == "" {
-		authToken = os.Getenv("GITHUB_TOKEN")
 	}
 
 	config := &FetchJobsConfig{
@@ -211,23 +203,22 @@ Options:`)
 		Owner:       *owner,
 		WorkflowID:  *workflowID,
 		Destination: dir,
-		Token:       authToken,
+		Token:       resolveToken(*token),
 	}
 
-	if err := executeFetchJobs(config); err != nil {
+	if err := executeFetchJobs(ctx, config); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
 }
 
-func executeFetchJobs(config *FetchJobsConfig) error {
+func executeFetchJobs(ctx context.Context, config *FetchJobsConfig) error {
 	store, err := storage.NewStore(config.Destination)
 	if err != nil {
 		return err
 	}
 
 	client := github.NewClient(config.Token)
-	ctx := context.Background()
 
 	return github.FetchStoredRunJobs(ctx, client, config.Owner, config.Repo, config.WorkflowID, store)
 }

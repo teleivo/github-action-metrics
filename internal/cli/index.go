@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/teleivo/github-action-metrics/internal/elastic"
 	"github.com/teleivo/github-action-metrics/internal/storage"
@@ -21,7 +20,7 @@ type IndexConfig struct {
 }
 
 // HandleIndex handles the index command and its subcommands.
-func HandleIndex(args []string) {
+func HandleIndex(ctx context.Context, args []string) {
 	if len(args) < 1 {
 		printIndexUsage()
 		os.Exit(1)
@@ -29,13 +28,13 @@ func HandleIndex(args []string) {
 
 	switch args[0] {
 	case "runs":
-		handleIndexRuns(args[1:])
+		handleIndexRuns(ctx, args[1:])
 	case "jobs":
-		handleIndexJobs(args[1:])
+		handleIndexJobs(ctx, args[1:])
 	case "steps":
-		handleIndexSteps(args[1:])
+		handleIndexSteps(ctx, args[1:])
 	case "all":
-		handleIndexAll(args[1:])
+		handleIndexAll(ctx, args[1:])
 	default:
 		printIndexUsage()
 		os.Exit(1)
@@ -78,19 +77,9 @@ func parseIndexFlags(name string, args []string) *IndexConfig {
 		os.Exit(1)
 	}
 
-	// Resolve and validate source
-	dir, err := filepath.Abs(*source)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error resolving source: %v\n", err)
-		os.Exit(1)
-	}
-	info, err := os.Stat(dir)
+	dir, err := resolveDirectory(*source)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
-	}
-	if !info.IsDir() {
-		fmt.Fprintf(os.Stderr, "Error: %s must be a directory\n", dir)
 		os.Exit(1)
 	}
 
@@ -103,7 +92,7 @@ func parseIndexFlags(name string, args []string) *IndexConfig {
 	}
 }
 
-func handleIndexRuns(args []string) {
+func handleIndexRuns(ctx context.Context, args []string) {
 	config := parseIndexFlags("runs", args)
 
 	store, err := storage.NewStore(config.Source)
@@ -113,7 +102,6 @@ func handleIndexRuns(args []string) {
 	}
 
 	client := elastic.NewClient(config.URL, config.User, config.Password)
-	ctx := context.Background()
 
 	if _, err := elastic.IndexRuns(ctx, client, store, config.WorkflowID); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
@@ -121,7 +109,7 @@ func handleIndexRuns(args []string) {
 	}
 }
 
-func handleIndexJobs(args []string) {
+func handleIndexJobs(ctx context.Context, args []string) {
 	config := parseIndexFlags("jobs", args)
 
 	store, err := storage.NewStore(config.Source)
@@ -131,7 +119,6 @@ func handleIndexJobs(args []string) {
 	}
 
 	client := elastic.NewClient(config.URL, config.User, config.Password)
-	ctx := context.Background()
 
 	if _, err := elastic.IndexJobs(ctx, client, store, config.WorkflowID); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
@@ -139,7 +126,7 @@ func handleIndexJobs(args []string) {
 	}
 }
 
-func handleIndexSteps(args []string) {
+func handleIndexSteps(ctx context.Context, args []string) {
 	config := parseIndexFlags("steps", args)
 
 	store, err := storage.NewStore(config.Source)
@@ -149,7 +136,6 @@ func handleIndexSteps(args []string) {
 	}
 
 	client := elastic.NewClient(config.URL, config.User, config.Password)
-	ctx := context.Background()
 
 	if _, err := elastic.IndexSteps(ctx, client, store, config.WorkflowID); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
@@ -157,7 +143,7 @@ func handleIndexSteps(args []string) {
 	}
 }
 
-func handleIndexAll(args []string) {
+func handleIndexAll(ctx context.Context, args []string) {
 	config := parseIndexFlags("all", args)
 
 	store, err := storage.NewStore(config.Source)
@@ -167,7 +153,6 @@ func handleIndexAll(args []string) {
 	}
 
 	client := elastic.NewClient(config.URL, config.User, config.Password)
-	ctx := context.Background()
 
 	if err := elastic.IndexAll(ctx, client, store, config.WorkflowID); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)

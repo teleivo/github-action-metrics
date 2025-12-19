@@ -3,7 +3,7 @@ package github
 
 import (
 	"context"
-	"log"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/go-github/v67/github"
@@ -28,8 +28,12 @@ func (t *loggingTransport) RoundTrip(req *http.Request) (*http.Response, error) 
 	rateUsed := resp.Header.Get("X-RateLimit-Used")
 	rateLimit := resp.Header.Get("X-RateLimit-Limit")
 	if rateUsed != "" && rateLimit != "" {
-		log.Printf("requested %s %s: %d ratelimit %s/%s",
-			req.Method, req.URL.Path, resp.StatusCode, rateUsed, rateLimit)
+		slog.Info("request completed",
+			"method", req.Method,
+			"path", req.URL.Path,
+			"status", resp.StatusCode,
+			"ratelimit_used", rateUsed,
+			"ratelimit_limit", rateLimit)
 	}
 
 	return resp, nil

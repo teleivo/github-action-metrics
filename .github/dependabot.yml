@@ -6,11 +6,10 @@ updates:
       interval: "daily"
     pull-request-branch-name:
       separator: "-"
-    target-branch: alpha
-  - package-ecosystem: "npm"
+
+  - package-ecosystem: "gomod"
     directory: "/"
     schedule:
       interval: "daily"
     pull-request-branch-name:
       separator: "-"
-    target-branch: alpha

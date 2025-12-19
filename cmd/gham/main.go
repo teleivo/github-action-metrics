@@ -2,8 +2,11 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/teleivo/github-action-metrics/internal/cli"
 )
@@ -11,6 +14,9 @@ import (
 var version = "dev"
 
 func main() {
+	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer cancel()
+
 	if len(os.Args) < 2 {
 		printUsage()
 		os.Exit(1)
@@ -18,9 +24,9 @@ func main() {
 
 	switch os.Args[1] {
 	case "fetch":
-		cli.HandleFetch(os.Args[2:])
+		cli.HandleFetch(ctx, os.Args[2:])
 	case "index":
-		cli.HandleIndex(os.Args[2:])
+		cli.HandleIndex(ctx, os.Args[2:])
 	case "version":
 		fmt.Println(version)
 	case "-h", "--help", "help":

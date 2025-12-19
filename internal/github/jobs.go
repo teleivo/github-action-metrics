@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
+	"log/slog"
 
 	"github.com/google/go-github/v67/github"
 	"github.com/teleivo/github-action-metrics/internal/storage"
@@ -14,7 +14,7 @@ import (
 func FetchJobs(ctx context.Context, client *Client, owner, repo string, workflowID int64, store *storage.Store, runIDs []int64) error {
 	for _, runID := range runIDs {
 		if err := fetchJobsForRun(ctx, client, owner, repo, workflowID, store, runID); err != nil {
-			log.Printf("failed to fetch jobs for run #%d: %v", runID, err)
+			slog.Warn("failed to fetch jobs for run", "run_id", runID, "error", err)
 		}
 	}
 	return nil
@@ -28,16 +28,16 @@ func FetchStoredRunJobs(ctx context.Context, client *Client, owner, repo string,
 	}
 
 	if len(runIDs) == 0 {
-		log.Println("no runs without jobs found")
+		slog.Info("no runs without jobs found")
 		return nil
 	}
 
-	log.Printf("fetching jobs for %d runs", len(runIDs))
+	slog.Info("fetching jobs", "run_count", len(runIDs))
 	return FetchJobs(ctx, client, owner, repo, workflowID, store, runIDs)
 }
 
 func fetchJobsForRun(ctx context.Context, client *Client, owner, repo string, workflowID int64, store *storage.Store, runID int64) error {
-	log.Printf("fetching jobs for run #%d", runID)
+	slog.Debug("fetching jobs for run", "run_id", runID)
 
 	opts := &github.ListWorkflowJobsOptions{
 		ListOptions: github.ListOptions{
@@ -61,13 +61,14 @@ func fetchJobsForRun(ctx context.Context, client *Client, owner, repo string, wo
 		opts.Page = resp.NextPage
 	}
 
-	log.Printf("fetched %d jobs for run #%d", len(allJobs), runID)
+	slog.Debug("fetched jobs", "run_id", runID, "job_count", len(allJobs))
 
-	// Store in same format as the TypeScript version: {"jobs": [...]}
 	jobsResponse := struct {
-		Jobs []*github.WorkflowJob `json:"jobs"`
+		TotalCount int                   `json:"total_count"`
+		Jobs       []*github.WorkflowJob `json:"jobs"`
 	}{
-		Jobs: allJobs,
+		TotalCount: len(allJobs),
+		Jobs:       allJobs,
 	}
 
 	data, err := json.Marshal(jobsResponse)

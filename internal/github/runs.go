@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
+	"log/slog"
 
 	"github.com/google/go-github/v67/github"
 	"github.com/teleivo/github-action-metrics/internal/storage"
@@ -40,21 +40,21 @@ func FetchRuns(ctx context.Context, client *Client, owner, repo string, workflow
 
 		for _, run := range runs.WorkflowRuns {
 			runID := run.GetID()
-			log.Printf("Run #%d", runID)
+			slog.Debug("processing run", "run_id", runID)
 
 			if store.RunExists(workflowID, runID) {
-				log.Printf("run #%d already exists in %s", runID, store.RunPath(workflowID, runID))
+				slog.Debug("run already exists", "run_id", runID, "path", store.RunPath(workflowID, runID))
 				continue
 			}
 
 			data, err := json.Marshal(run)
 			if err != nil {
-				log.Printf("failed to marshal run #%d: %v", runID, err)
+				slog.Warn("failed to marshal run", "run_id", runID, "error", err)
 				continue
 			}
 
 			if err := store.SaveRun(workflowID, runID, data); err != nil {
-				log.Printf("failed to save run #%d: %v", runID, err)
+				slog.Warn("failed to save run", "run_id", runID, "error", err)
 				continue
 			}
 

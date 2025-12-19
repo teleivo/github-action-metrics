@@ -33,12 +33,12 @@ func NewStore(baseDir string) (*Store, error) {
 
 // RunPath returns the file path for a workflow run.
 func (s *Store) RunPath(workflowID, runID int64) string {
-	return filepath.Join(s.baseDir, "workflows", fmt.Sprintf("%d", workflowID), "runs", fmt.Sprintf("%d.json", runID))
+	return filepath.Join(s.baseDir, "workflows", strconv.FormatInt(workflowID, 10), "runs", strconv.FormatInt(runID, 10)+".json")
 }
 
 // JobPath returns the file path for jobs of a workflow run.
 func (s *Store) JobPath(workflowID, runID int64) string {
-	return filepath.Join(s.baseDir, "workflows", fmt.Sprintf("%d", workflowID), "jobs", fmt.Sprintf("%d.json", runID))
+	return filepath.Join(s.baseDir, "workflows", strconv.FormatInt(workflowID, 10), "jobs", strconv.FormatInt(runID, 10)+".json")
 }
 
 // RunExists checks if a run file exists.
@@ -99,12 +99,12 @@ func (s *Store) LoadJobs(workflowID, runID int64) (json.RawMessage, error) {
 
 // RunsDir returns the directory path for runs of a workflow.
 func (s *Store) RunsDir(workflowID int64) string {
-	return filepath.Join(s.baseDir, "workflows", fmt.Sprintf("%d", workflowID), "runs")
+	return filepath.Join(s.baseDir, "workflows", strconv.FormatInt(workflowID, 10), "runs")
 }
 
 // JobsDir returns the directory path for jobs of a workflow.
 func (s *Store) JobsDir(workflowID int64) string {
-	return filepath.Join(s.baseDir, "workflows", fmt.Sprintf("%d", workflowID), "jobs")
+	return filepath.Join(s.baseDir, "workflows", strconv.FormatInt(workflowID, 10), "jobs")
 }
 
 // IterRuns iterates over all stored runs for a workflow.
