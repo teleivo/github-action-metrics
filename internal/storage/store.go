@@ -57,10 +57,10 @@ func (s *Store) JobExists(workflowID, runID int64) bool {
 func (s *Store) SaveRun(workflowID, runID int64, data json.RawMessage) error {
 	path := s.RunPath(workflowID, runID)
 	dir := filepath.Dir(path)
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return fmt.Errorf("creating directory %q: %w", dir, err)
 	}
-	if err := os.WriteFile(path, data, 0o644); err != nil {
+	if err := os.WriteFile(path, data, 0o600); err != nil {
 		return fmt.Errorf("writing run file %q: %w", path, err)
 	}
 	return nil
@@ -70,10 +70,10 @@ func (s *Store) SaveRun(workflowID, runID int64, data json.RawMessage) error {
 func (s *Store) SaveJobs(workflowID, runID int64, data json.RawMessage) error {
 	path := s.JobPath(workflowID, runID)
 	dir := filepath.Dir(path)
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return fmt.Errorf("creating directory %q: %w", dir, err)
 	}
-	if err := os.WriteFile(path, data, 0o644); err != nil {
+	if err := os.WriteFile(path, data, 0o600); err != nil {
 		return fmt.Errorf("writing jobs file %q: %w", path, err)
 	}
 	return nil

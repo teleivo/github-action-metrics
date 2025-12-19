@@ -25,7 +25,6 @@ type FetchRunsConfig struct {
 	WorkflowID  int64
 	Destination string
 	Created     string
-	Token       string
 	WithJobs    bool
 }
 
@@ -35,7 +34,6 @@ type FetchJobsConfig struct {
 	Owner       string
 	WorkflowID  int64
 	Destination string
-	Token       string
 }
 
 // resolveDirectory resolves a path to an absolute directory path.
@@ -55,11 +53,8 @@ func resolveDirectory(path string) (string, error) {
 	return dir, nil
 }
 
-// resolveToken returns the token from the flag or falls back to GITHUB_TOKEN env var.
-func resolveToken(token string) string {
-	if token != "" {
-		return token
-	}
+// getGitHubToken returns the GitHub token from the GITHUB_TOKEN environment variable.
+func getGitHubToken() string {
 	return os.Getenv("GITHUB_TOKEN")
 }
 
@@ -99,6 +94,8 @@ func handleFetchRuns(ctx context.Context, args []string, wErr io.Writer) (int, e
 
 Fetch latest GitHub action runs for a given workflow.
 
+Requires GITHUB_TOKEN environment variable for authentication.
+
 Options:`)
 		fs.PrintDefaults()
 	}
@@ -108,7 +105,6 @@ Options:`)
 	workflowID := fs.Int64("workflow-id", 0, "Workflow ID of GitHub action (required)")
 	destination := fs.String("destination", "", "Directory where payloads will be stored (required)")
 	created := fs.String("created", "", "Date filter in format '2021-10-12' or '2021-10-29T22:40:19Z'")
-	token := fs.String("token", "", "GitHub access token (falls back to GITHUB_TOKEN env var)")
 	withJobs := fs.Bool("with-jobs", false, "Fetch jobs for fetched runs")
 
 	if err := fs.Parse(args); err != nil {
@@ -120,7 +116,7 @@ Options:`)
 
 	// Validate required flags
 	if *repo == "" || *owner == "" || *workflowID == 0 || *destination == "" {
-		fmt.Fprintln(wErr, "Error: -repo, -owner, -workflow-id, and -destination are required")
+		_, _ = fmt.Fprintln(wErr, "Error: -repo, -owner, -workflow-id, and -destination are required")
 		fs.Usage()
 		return 2, nil
 	}
@@ -136,7 +132,6 @@ Options:`)
 		WorkflowID:  *workflowID,
 		Destination: dir,
 		Created:     *created,
-		Token:       resolveToken(*token),
 		WithJobs:    *withJobs,
 	}
 
@@ -152,7 +147,7 @@ func executeFetchRuns(ctx context.Context, config *FetchRunsConfig) error {
 		return err
 	}
 
-	client := github.NewClient(config.Token)
+	client := github.NewClient(getGitHubToken())
 
 	opts := &github.RunOptions{}
 	if config.Created != "" {
@@ -177,9 +172,11 @@ func handleFetchJobs(ctx context.Context, args []string, wErr io.Writer) (int, e
 	fs := flag.NewFlagSet("fetch jobs", flag.ContinueOnError)
 	fs.SetOutput(wErr)
 	fs.Usage = func() {
-		fmt.Fprintln(wErr, `Usage: gham fetch jobs [options]
+		_, _ = fmt.Fprintln(wErr, `Usage: gham fetch jobs [options]
 
 Fetch jobs for stored workflow runs.
+
+Requires GITHUB_TOKEN environment variable for authentication.
 
 Options:`)
 		fs.PrintDefaults()
@@ -189,7 +186,6 @@ Options:`)
 	owner := fs.String("owner", "", "Owner of GitHub repository (required)")
 	workflowID := fs.Int64("workflow-id", 0, "Workflow ID of GitHub action (required)")
 	destination := fs.String("destination", "", "Directory where payloads are stored (required)")
-	token := fs.String("token", "", "GitHub access token (falls back to GITHUB_TOKEN env var)")
 
 	if err := fs.Parse(args); err != nil {
 		if err == flag.ErrHelp {
@@ -200,7 +196,7 @@ Options:`)
 
 	// Validate required flags
 	if *repo == "" || *owner == "" || *workflowID == 0 || *destination == "" {
-		fmt.Fprintln(wErr, "Error: -repo, -owner, -workflow-id, and -destination are required")
+		_, _ = fmt.Fprintln(wErr, "Error: -repo, -owner, -workflow-id, and -destination are required")
 		fs.Usage()
 		return 2, nil
 	}
@@ -215,7 +211,6 @@ Options:`)
 		Owner:       *owner,
 		WorkflowID:  *workflowID,
 		Destination: dir,
-		Token:       resolveToken(*token),
 	}
 
 	if err := executeFetchJobs(ctx, config); err != nil {
@@ -230,7 +225,7 @@ func executeFetchJobs(ctx context.Context, config *FetchJobsConfig) error {
 		return err
 	}
 
-	client := github.NewClient(config.Token)
+	client := github.NewClient(getGitHubToken())
 
 	return github.FetchStoredRunJobs(ctx, client, config.Owner, config.Repo, config.WorkflowID, store)
 }

@@ -8,7 +8,10 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 )
+
+const httpTimeout = 60 * time.Second
 
 // Client is an Elasticsearch client for bulk indexing operations.
 type Client struct {
@@ -24,7 +27,7 @@ func NewClient(url, username, password string) *Client {
 		baseURL:  url,
 		username: username,
 		password: password,
-		client:   &http.Client{},
+		client:   &http.Client{Timeout: httpTimeout},
 	}
 }
 

@@ -5,9 +5,12 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/google/go-github/v67/github"
 )
+
+const httpTimeout = 30 * time.Second
 
 // Client wraps the GitHub API client with rate limit logging.
 type Client struct {
@@ -45,6 +48,7 @@ func NewClient(token string) *Client {
 	var httpClient *http.Client
 	if token != "" {
 		httpClient = &http.Client{
+			Timeout: httpTimeout,
 			Transport: &loggingTransport{
 				transport: &github.BasicAuthTransport{
 					Username: "x-access-token",
@@ -54,6 +58,7 @@ func NewClient(token string) *Client {
 		}
 	} else {
 		httpClient = &http.Client{
+			Timeout: httpTimeout,
 			Transport: &loggingTransport{
 				transport: http.DefaultTransport,
 			},
