@@ -82,7 +82,7 @@ func HandleFetch(ctx context.Context, args []string, wErr io.Writer) (int, error
 }
 
 func printFetchUsage(w io.Writer) {
-	fmt.Fprintln(w, `Usage: gham fetch <command> [options]
+	_, _ = fmt.Fprintln(w, `Usage: gham fetch <command> [options]
 
 Commands:
   runs    Fetch workflow runs from GitHub
@@ -95,7 +95,7 @@ func handleFetchRuns(ctx context.Context, args []string, wErr io.Writer) (int, e
 	fs := flag.NewFlagSet("fetch runs", flag.ContinueOnError)
 	fs.SetOutput(wErr)
 	fs.Usage = func() {
-		fmt.Fprintln(wErr, `Usage: gham fetch runs [options]
+		_, _ = fmt.Fprintln(wErr, `Usage: gham fetch runs [options]
 
 Fetch latest GitHub action runs for a given workflow.
 

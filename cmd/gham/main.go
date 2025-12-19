@@ -42,7 +42,7 @@ func run(args []string, w io.Writer, wErr io.Writer) (int, error) {
 	case "index":
 		return cli.HandleIndex(ctx, args[2:], wErr)
 	case "version":
-		fmt.Fprintln(w, version)
+		_, _ = fmt.Fprintln(w, version)
 		return 0, nil
 	case "-h", "--help", "help":
 		usage(wErr)
@@ -53,7 +53,7 @@ func run(args []string, w io.Writer, wErr io.Writer) (int, error) {
 }
 
 func usage(w io.Writer) {
-	fmt.Fprintln(w, `gham - GitHub Action Metrics
+	_, _ = fmt.Fprintln(w, `gham - GitHub Action Metrics
 
 Fetch GitHub Actions workflow data and index it in Elasticsearch for analysis.
 

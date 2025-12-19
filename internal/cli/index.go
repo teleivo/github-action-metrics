@@ -57,7 +57,7 @@ func parseIndexFlags(name string, args []string, wErr io.Writer) (*IndexConfig, 
 	fs := flag.NewFlagSet("index "+name, flag.ContinueOnError)
 	fs.SetOutput(wErr)
 	fs.Usage = func() {
-		fmt.Fprintf(wErr, "Usage: gham index %s [options]\n\nIndex workflow %s in Elasticsearch.\n\nOptions:\n", name, name)
+		_, _ = fmt.Fprintf(wErr, "Usage: gham index %s [options]\n\nIndex workflow %s in Elasticsearch.\n\nOptions:\n", name, name)
 		fs.PrintDefaults()
 	}
 
