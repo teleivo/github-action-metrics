@@ -3,14 +3,20 @@ package cli
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 
 	"github.com/teleivo/github-action-metrics/internal/github"
 	"github.com/teleivo/github-action-metrics/internal/storage"
 )
+
+// errFlagParse is a sentinel error indicating flag parsing failed.
+// The flag package already printed the error, so main should not print again.
+var errFlagParse = errors.New("flag parse error")
 
 // FetchRunsConfig holds configuration for the fetch runs command.
 type FetchRunsConfig struct {
@@ -58,25 +64,25 @@ func resolveToken(token string) string {
 }
 
 // HandleFetch handles the fetch command and its subcommands.
-func HandleFetch(ctx context.Context, args []string) {
+func HandleFetch(ctx context.Context, args []string, wErr io.Writer) (int, error) {
 	if len(args) < 1 {
-		printFetchUsage()
-		os.Exit(1)
+		printFetchUsage(wErr)
+		return 2, nil
 	}
 
 	switch args[0] {
 	case "runs":
-		handleFetchRuns(ctx, args[1:])
+		return handleFetchRuns(ctx, args[1:], wErr)
 	case "jobs":
-		handleFetchJobs(ctx, args[1:])
+		return handleFetchJobs(ctx, args[1:], wErr)
 	default:
-		printFetchUsage()
-		os.Exit(1)
+		printFetchUsage(wErr)
+		return 2, nil
 	}
 }
 
-func printFetchUsage() {
-	fmt.Fprintln(os.Stderr, `Usage: gham fetch <command> [options]
+func printFetchUsage(w io.Writer) {
+	fmt.Fprintln(w, `Usage: gham fetch <command> [options]
 
 Commands:
   runs    Fetch workflow runs from GitHub
@@ -85,10 +91,11 @@ Commands:
 Run 'gham fetch <command> -h' for more information on a command.`)
 }
 
-func handleFetchRuns(ctx context.Context, args []string) {
-	fs := flag.NewFlagSet("fetch runs", flag.ExitOnError)
+func handleFetchRuns(ctx context.Context, args []string, wErr io.Writer) (int, error) {
+	fs := flag.NewFlagSet("fetch runs", flag.ContinueOnError)
+	fs.SetOutput(wErr)
 	fs.Usage = func() {
-		fmt.Fprintln(os.Stderr, `Usage: gham fetch runs [options]
+		fmt.Fprintln(wErr, `Usage: gham fetch runs [options]
 
 Fetch latest GitHub action runs for a given workflow.
 
@@ -105,20 +112,22 @@ Options:`)
 	withJobs := fs.Bool("with-jobs", false, "Fetch jobs for fetched runs")
 
 	if err := fs.Parse(args); err != nil {
-		os.Exit(1)
+		if err == flag.ErrHelp {
+			return 0, nil
+		}
+		return 2, errFlagParse
 	}
 
 	// Validate required flags
 	if *repo == "" || *owner == "" || *workflowID == 0 || *destination == "" {
-		fmt.Fprintln(os.Stderr, "Error: -repo, -owner, -workflow-id, and -destination are required")
+		fmt.Fprintln(wErr, "Error: -repo, -owner, -workflow-id, and -destination are required")
 		fs.Usage()
-		os.Exit(1)
+		return 2, nil
 	}
 
 	dir, err := resolveDirectory(*destination)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		return 1, err
 	}
 
 	config := &FetchRunsConfig{
@@ -132,9 +141,9 @@ Options:`)
 	}
 
 	if err := executeFetchRuns(ctx, config); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		return 1, err
 	}
+	return 0, nil
 }
 
 func executeFetchRuns(ctx context.Context, config *FetchRunsConfig) error {
@@ -164,10 +173,11 @@ func executeFetchRuns(ctx context.Context, config *FetchRunsConfig) error {
 	return nil
 }
 
-func handleFetchJobs(ctx context.Context, args []string) {
-	fs := flag.NewFlagSet("fetch jobs", flag.ExitOnError)
+func handleFetchJobs(ctx context.Context, args []string, wErr io.Writer) (int, error) {
+	fs := flag.NewFlagSet("fetch jobs", flag.ContinueOnError)
+	fs.SetOutput(wErr)
 	fs.Usage = func() {
-		fmt.Fprintln(os.Stderr, `Usage: gham fetch jobs [options]
+		fmt.Fprintln(wErr, `Usage: gham fetch jobs [options]
 
 Fetch jobs for stored workflow runs.
 
@@ -182,20 +192,22 @@ Options:`)
 	token := fs.String("token", "", "GitHub access token (falls back to GITHUB_TOKEN env var)")
 
 	if err := fs.Parse(args); err != nil {
-		os.Exit(1)
+		if err == flag.ErrHelp {
+			return 0, nil
+		}
+		return 2, errFlagParse
 	}
 
 	// Validate required flags
 	if *repo == "" || *owner == "" || *workflowID == 0 || *destination == "" {
-		fmt.Fprintln(os.Stderr, "Error: -repo, -owner, -workflow-id, and -destination are required")
+		fmt.Fprintln(wErr, "Error: -repo, -owner, -workflow-id, and -destination are required")
 		fs.Usage()
-		os.Exit(1)
+		return 2, nil
 	}
 
 	dir, err := resolveDirectory(*destination)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		return 1, err
 	}
 
 	config := &FetchJobsConfig{
@@ -207,9 +219,9 @@ Options:`)
 	}
 
 	if err := executeFetchJobs(ctx, config); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		return 1, err
 	}
+	return 0, nil
 }
 
 func executeFetchJobs(ctx context.Context, config *FetchJobsConfig) error {

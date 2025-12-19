@@ -3,7 +3,9 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/signal"
 	"syscall"
@@ -13,33 +15,45 @@ import (
 
 var version = "dev"
 
+// errFlagParse is a sentinel error indicating flag parsing failed.
+// The flag package already printed the error, so main should not print again.
+var errFlagParse = errors.New("flag parse error")
+
 func main() {
+	code, err := run(os.Args, os.Stdout, os.Stderr)
+	if err != nil && err != errFlagParse {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+	}
+	os.Exit(code)
+}
+
+func run(args []string, w io.Writer, wErr io.Writer) (int, error) {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
 
-	if len(os.Args) < 2 {
-		printUsage()
-		os.Exit(1)
+	if len(args) < 2 {
+		usage(wErr)
+		return 2, nil
 	}
 
-	switch os.Args[1] {
+	switch args[1] {
 	case "fetch":
-		cli.HandleFetch(ctx, os.Args[2:])
+		return cli.HandleFetch(ctx, args[2:], wErr)
 	case "index":
-		cli.HandleIndex(ctx, os.Args[2:])
+		return cli.HandleIndex(ctx, args[2:], wErr)
 	case "version":
-		fmt.Println(version)
+		fmt.Fprintln(w, version)
+		return 0, nil
 	case "-h", "--help", "help":
-		printUsage()
+		usage(wErr)
+		return 0, nil
 	default:
-		fmt.Fprintf(os.Stderr, "Unknown command: %s\n\n", os.Args[1])
-		printUsage()
-		os.Exit(1)
+		return 2, fmt.Errorf("unknown command: %s", args[1])
 	}
 }
 
-func printUsage() {
-	fmt.Println(`gham - GitHub Action Metrics
+func usage(w io.Writer) {
+	fmt.Fprintln(w, `gham - GitHub Action Metrics
 
 Fetch GitHub Actions workflow data and index it in Elasticsearch for analysis.
 

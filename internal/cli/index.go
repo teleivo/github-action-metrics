@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"os"
+	"io"
 
 	"github.com/teleivo/github-action-metrics/internal/elastic"
 	"github.com/teleivo/github-action-metrics/internal/storage"
@@ -20,29 +20,29 @@ type IndexConfig struct {
 }
 
 // HandleIndex handles the index command and its subcommands.
-func HandleIndex(ctx context.Context, args []string) {
+func HandleIndex(ctx context.Context, args []string, wErr io.Writer) (int, error) {
 	if len(args) < 1 {
-		printIndexUsage()
-		os.Exit(1)
+		printIndexUsage(wErr)
+		return 2, nil
 	}
 
 	switch args[0] {
 	case "runs":
-		handleIndexRuns(ctx, args[1:])
+		return handleIndexRuns(ctx, args[1:], wErr)
 	case "jobs":
-		handleIndexJobs(ctx, args[1:])
+		return handleIndexJobs(ctx, args[1:], wErr)
 	case "steps":
-		handleIndexSteps(ctx, args[1:])
+		return handleIndexSteps(ctx, args[1:], wErr)
 	case "all":
-		handleIndexAll(ctx, args[1:])
+		return handleIndexAll(ctx, args[1:], wErr)
 	default:
-		printIndexUsage()
-		os.Exit(1)
+		printIndexUsage(wErr)
+		return 2, nil
 	}
 }
 
-func printIndexUsage() {
-	fmt.Fprintln(os.Stderr, `Usage: gham index <command> [options]
+func printIndexUsage(w io.Writer) {
+	fmt.Fprintln(w, `Usage: gham index <command> [options]
 
 Commands:
   runs    Index workflow runs in Elasticsearch
@@ -53,10 +53,11 @@ Commands:
 Run 'gham index <command> -h' for more information on a command.`)
 }
 
-func parseIndexFlags(name string, args []string) *IndexConfig {
-	fs := flag.NewFlagSet("index "+name, flag.ExitOnError)
+func parseIndexFlags(name string, args []string, wErr io.Writer) (*IndexConfig, int, error) {
+	fs := flag.NewFlagSet("index "+name, flag.ContinueOnError)
+	fs.SetOutput(wErr)
 	fs.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: gham index %s [options]\n\nIndex workflow %s in Elasticsearch.\n\nOptions:\n", name, name)
+		fmt.Fprintf(wErr, "Usage: gham index %s [options]\n\nIndex workflow %s in Elasticsearch.\n\nOptions:\n", name, name)
 		fs.PrintDefaults()
 	}
 
@@ -67,20 +68,22 @@ func parseIndexFlags(name string, args []string) *IndexConfig {
 	password := fs.String("password", "", "Elasticsearch basic authentication password (required)")
 
 	if err := fs.Parse(args); err != nil {
-		os.Exit(1)
+		if err == flag.ErrHelp {
+			return nil, 0, nil
+		}
+		return nil, 2, errFlagParse
 	}
 
 	// Validate required flags
 	if *url == "" || *workflowID == 0 || *source == "" || *user == "" || *password == "" {
-		fmt.Fprintln(os.Stderr, "Error: -url, -workflow-id, -source, -user, and -password are required")
+		fmt.Fprintln(wErr, "Error: -url, -workflow-id, -source, -user, and -password are required")
 		fs.Usage()
-		os.Exit(1)
+		return nil, 2, nil
 	}
 
 	dir, err := resolveDirectory(*source)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		return nil, 1, err
 	}
 
 	return &IndexConfig{
@@ -89,73 +92,81 @@ func parseIndexFlags(name string, args []string) *IndexConfig {
 		Source:     dir,
 		User:       *user,
 		Password:   *password,
-	}
+	}, 0, nil
 }
 
-func handleIndexRuns(ctx context.Context, args []string) {
-	config := parseIndexFlags("runs", args)
+func handleIndexRuns(ctx context.Context, args []string, wErr io.Writer) (int, error) {
+	config, code, err := parseIndexFlags("runs", args, wErr)
+	if config == nil {
+		return code, err
+	}
 
 	store, err := storage.NewStore(config.Source)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		return 1, err
 	}
 
 	client := elastic.NewClient(config.URL, config.User, config.Password)
 
 	if _, err := elastic.IndexRuns(ctx, client, store, config.WorkflowID); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		return 1, err
 	}
+	return 0, nil
 }
 
-func handleIndexJobs(ctx context.Context, args []string) {
-	config := parseIndexFlags("jobs", args)
+func handleIndexJobs(ctx context.Context, args []string, wErr io.Writer) (int, error) {
+	config, code, err := parseIndexFlags("jobs", args, wErr)
+	if config == nil {
+		return code, err
+	}
 
 	store, err := storage.NewStore(config.Source)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		return 1, err
 	}
 
 	client := elastic.NewClient(config.URL, config.User, config.Password)
 
 	if _, err := elastic.IndexJobs(ctx, client, store, config.WorkflowID); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		return 1, err
 	}
+	return 0, nil
 }
 
-func handleIndexSteps(ctx context.Context, args []string) {
-	config := parseIndexFlags("steps", args)
+func handleIndexSteps(ctx context.Context, args []string, wErr io.Writer) (int, error) {
+	config, code, err := parseIndexFlags("steps", args, wErr)
+	if config == nil {
+		return code, err
+	}
 
 	store, err := storage.NewStore(config.Source)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		return 1, err
 	}
 
 	client := elastic.NewClient(config.URL, config.User, config.Password)
 
 	if _, err := elastic.IndexSteps(ctx, client, store, config.WorkflowID); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		return 1, err
 	}
+	return 0, nil
 }
 
-func handleIndexAll(ctx context.Context, args []string) {
-	config := parseIndexFlags("all", args)
+func handleIndexAll(ctx context.Context, args []string, wErr io.Writer) (int, error) {
+	config, code, err := parseIndexFlags("all", args, wErr)
+	if config == nil {
+		return code, err
+	}
 
 	store, err := storage.NewStore(config.Source)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		return 1, err
 	}
 
 	client := elastic.NewClient(config.URL, config.User, config.Password)
 
 	if err := elastic.IndexAll(ctx, client, store, config.WorkflowID); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		return 1, err
 	}
+	return 0, nil
 }
